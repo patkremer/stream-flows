@@ -1,5 +1,5 @@
 <template>
-  <div class="col s6 md5 lg3 xl3" >
+  <div class="col s12 md5 lg3 xl3" >
       <div class="card small grey lighten-5">
         <div class="card-content">
           <span class="card-title">

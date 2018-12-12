@@ -14,6 +14,8 @@ npm run serve
 ```
 npm run build
 ```
+Deploy with surge [see link](https://cli.vuejs.org/guide/deployment.html#surge).
+
 
 ### Run your tests
 ```
@@ -27,3 +29,4 @@ npm run lint
 
 ### Customize configuration
 See [Configuration Reference](https://cli.vuejs.org/config/).
+

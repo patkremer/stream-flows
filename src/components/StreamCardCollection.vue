@@ -1,7 +1,10 @@
 <template>
  
 <div class="stream-card-collection" >
-   <stream-card-collection-item :stream="stream" v-for="(stream) in streams" :key="stream.id"></stream-card-collection-item>
+  <div class="col s12 md5 lg3 xl3" v-for="(stream) in streams" :key="stream.id">
+    <!-- <stream-card-collection-item :stream="stream" ></stream-card-collection-item> -->
+     <stream-card-collection-item v-bind:stream.sync="stream" ></stream-card-collection-item>
+  </div>
 </div>
 
 </template>

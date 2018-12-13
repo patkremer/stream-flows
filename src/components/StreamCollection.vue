@@ -131,7 +131,9 @@ export default {
         );
       } else {
         return _.orderBy(
-          this.streams,
+          this.streams.filter(function(s) {
+            return s.flowAmount != 0;
+          }),
           ["station_name", "county", "date_time"],
           ["asc", "asc", "desc"]
         );
@@ -167,7 +169,7 @@ export default {
   },
 
   methods: {
-    searchChanged: function () {
+    searchChanged() {
       if (this.search > 3) {
           this.$ga.event({
             eventCategory: 'searchQuery',

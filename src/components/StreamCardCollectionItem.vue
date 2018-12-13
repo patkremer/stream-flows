@@ -32,9 +32,9 @@
           </a> -->
 
           <!-- <br> -->
-          <a class="btn waves-effect waves-light teal darken-2" v-if="getMapLink(stream)" target="_blank" v-bind:href="getMapLink(stream)"><i class="material-icons left">my_location</i>Map</a>
+          <a class="btn waves-effect waves-light teal darken-2" v-on:click="getMapClick()" v-if="getMapLink(stream)" target="_blank" v-bind:href="getMapLink(stream)"><i class="material-icons left">my_location</i>Map</a>
 
-          <a v-if="stream.http_linkage" v-bind:href="stream.http_linkage" target="_blank" class="btn waves-effect waves-light teal darken-2">
+          <a v-if="stream.http_linkage" v-on:click="viewSourceClick()" v-bind:href="stream.http_linkage" target="_blank" class="btn waves-effect waves-light teal darken-2">
             <i class="material-icons medium left">link</i>
             View Orginal Source
           </a>
@@ -63,6 +63,20 @@ export default {
   },
 
   methods: {
+    getMapClick() {
+      this.$ga.event({
+        eventCategory: 'click',
+        eventAction: 'getMap',
+        eventLabel: this.stream.station_name,
+      });
+    },
+    viewSourceClick() {
+      this.$ga.event({
+        eventCategory: 'click',
+        eventAction: 'viewSourceClick',
+        eventLabel: this.stream.station_name,
+      });
+    },
     getMapLink(stream) {
        
       if (stream.location && stream.location.latitude && stream.location.longitude) {

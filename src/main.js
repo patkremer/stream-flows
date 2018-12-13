@@ -9,11 +9,11 @@ Vue.use(VueAnalytics, {
   id: 'UA-125445562-2',
   autoTracking: {
     screenview: true,
-    batch: {
-      enabled: true, // enable/disable
-      amount: 2, // amount of events fired
-      delay: 500 // delay in milliseconds
-    }
+    // batch: {
+    //   enabled: true, // enable/disable
+    //   amount: 2, // amount of events fired
+    //   delay: 500 // delay in milliseconds
+    // }
   }
 })
 Vue.use(VueLocalStorage)

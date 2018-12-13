@@ -3,7 +3,7 @@
 <div class="stream-card-collection" >
   <div class="col s12 md5 lg3 xl3" v-for="(stream) in streams" :key="stream.id">
     <!-- <stream-card-collection-item :stream="stream" ></stream-card-collection-item> -->
-     <stream-card-collection-item v-bind:stream.sync="stream" ></stream-card-collection-item>
+     <stream-card-collection-item v-bind:stream.sync="stream" s></stream-card-collection-item>
   </div>
 </div>
 

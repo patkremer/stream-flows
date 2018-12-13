@@ -85,7 +85,6 @@ export default {
           .catch(error => (this.error = error))
           .then(response => {
             this.stream.weather = response;
-            console.log('got weather', response);
           });
      },
   }

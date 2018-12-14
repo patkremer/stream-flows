@@ -59,8 +59,8 @@
         target="_blank"
         class="btn waves-effect waves-light teal darken-2"
       >
-        <i class="material-icons medium left">link</i>
-        View Source
+        <i class="material-icons medium left">show_chart</i>
+        Detail Graph
       </a>
     </div>
   </div>

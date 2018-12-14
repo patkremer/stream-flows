@@ -1,4 +1,18 @@
-# stream-flows
+# Colorado Flows
+
+## About the project
+The idea behind stream-flows is to create an easy way to check the flows of rivers in colorado, maybe one day, across the USA. 
+In addition to an easy way to search for and view flows, it will also provide an easy way to view data like weather, location, historical data. 
+
+Currently the data for river flows is in two locations, https://waterdata.usgs.gov and https://colorado.data.gov. My goal is to combine those two datasets to create one clean interface for viewing river data.
+
+Eventually, it would be nice to integrate data with the colorado fishing atlas so speicies can be listed if applicable. 
+
+Depending on general feedback from the community, I'd like to create the abiltity to have profiles, favorite rivers, like rivers, comment on rivers/sections, get alerted about flow increases or decreases.
+
+## Project built with
+
+materializecss and Vue.js
 
 ## Project setup
 ```

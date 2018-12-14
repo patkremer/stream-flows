@@ -4,7 +4,9 @@ import VueLocalStorage from 'vue-localstorage'
 import moment from 'vue-moment'
 import VueAnalytics from 'vue-analytics';
 import VueResource from 'vue-resource';
+import VueScrollTo from 'vue-scrollto';
 
+Vue.use(VueScrollTo);
 Vue.use(VueResource);
 Vue.use(VueAnalytics, {
   id: 'UA-125445562-2',

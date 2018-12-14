@@ -37,8 +37,9 @@ export default {
   },
 
   checkduplicates: function(data, s) {
+    
     if (data[s.stationId]) {
-      if (s.qualifiers && s.qualifiers.includes("Ice")) {
+      if (s.qualifiers && s.qualifiers.indexOf("Ice") != -1) {
         s.amount = "Ice";
         s.units = "";
         s.flowAmount = 0.0;
@@ -57,8 +58,14 @@ export default {
       //   }
       //   data[s.stationId].duplicates.push(s);
     } else {
-      if (s.qualifiers && s.qualifiers.includes("Ice")) {
+      if (s.qualifiers && s.qualifiers.indexOf("Ice") != -1) {
         s.amount = "Ice";
+        s.units = "";
+        s.flowAmount = 0.0;
+      }
+
+      if (s.amount.indexOf('-999')  != -1 || s.amount.indexOf('-888')  != -1) {
+        s.amount = 'Ice or Inactive';
         s.units = "";
         s.flowAmount = 0.0;
       }
@@ -136,7 +143,7 @@ export default {
   },
   urls: {
     coData:
-      "https://data.colorado.gov/resource/a97x-8zfv.json?station_type=Stream&station_status=Active&$limit=10000",
+      "https://data.colorado.gov/resource/a97x-8zfv.json?station_type=Stream&$limit=10000",
     usgs:
       "https://waterservices.usgs.gov/nwis/iv/?format=json&stateCd=co&parameterCd=00060,00065&siteType=ST&siteStatus=active",
     usgsBase:

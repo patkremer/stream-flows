@@ -213,13 +213,14 @@ export default {
 
   methods: {
     searchChanged() {
-      if (this.search > 3) {
-          this.$ga.event({
-            eventCategory: 'searchQuery',
-            eventAction: 'searchStreams',
-            eventLabel: this.search,
-          });
-        }
+      if (this.search.length > 3) {
+        this.$ga.event({
+          eventCategory: "search",
+          eventAction: "searchStreams",
+          eventLabel: this.search
+        });
+          
+      }
     },
     track() {
       this.$ga.page('/');

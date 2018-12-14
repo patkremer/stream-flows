@@ -132,35 +132,6 @@ export default {
         });
     });
 
-    // .then(response => {
-    //     console.log(response, 'success');
-    //     //response.data = JSON.parse(response.data);
-    //     for (let index = 0; index < response.length; index++) {
-    //         let s = response[index];
-    //         s.id = index;
-    //         s.weather = {};
-    //         if (!s.county) {
-    //           s.county = '';
-    //         }
-    //         if (s.amount && s.amount !== "-888.00") {
-    //           // bad data, set to 0
-    //           s.flowAmount = parseFloat(s.amount);
-    //         } else {
-    //           s.amount = "0.00";
-    //           s.flowAmount = 0.0;
-    //         }
-    //         if (s.location && s.location.coordinates) {
-    //           s.location.longitude = s.location.coordinates[0];
-    //           s.location.latitude = s.location.coordinates[1];
-
-    //         } else {
-    //             s.mapLink = '';
-    //         }
-    //         s.stationId = _.snakeCase(s.station_name);
-
-    //         response[index] = s;
-    //       }
-    // });
     return promise;
   },
   urls: {

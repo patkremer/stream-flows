@@ -19,6 +19,9 @@ export default {
             // var endDate = '2018-11-09T00:00:00.000';
             // //where=date between '2015-01-10T12:00:00' and '2015-01-10T14:00:00'
             return this.coData + "&station_name=";
-        }
+        },
+        getCoRiverData: function () {
+
+        } 
     }
 }

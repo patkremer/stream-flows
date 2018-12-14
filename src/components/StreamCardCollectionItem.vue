@@ -14,7 +14,7 @@
             <br/>
             <i class="material-icons left">wb_cloudy</i>
             <p v-if="stream.weather.main">
-              <b>{{stream.weather.main.temp}} &deg; F, {{stream.weather.wind.speed}} mph winds</b>
+              <b>{{stream.weather.main.temp}}&deg; F, {{stream.weather.wind.speed}} mph winds</b>
             </p>
              <a class="btn-flat" v-else v-on:click.once="getWeather(stream)" >Show Weather</a>
             

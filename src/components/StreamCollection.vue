@@ -84,10 +84,19 @@ import StreamCardCollection from "./StreamCardCollection.vue";
 
 export default {
   name: "StreamCollection",
+  localStorage: {
+    streams: {
+      type: Object,
+      default: {
+        streams: {}
+      }
+    },
+  },
   data() {
     return {
       search: "",
       streams: [],
+      usgsData: [],
       pageNumber: 1,
       size: 10,
       error: null,
@@ -205,7 +214,7 @@ export default {
       //  .then(response => console.log(response));
     },
     fetchStreamData() {
-      let expireCache = this.$localStorage.get('streams-cache-expire-date', null);
+      let expireCache = this.$ls.get('streams-cache-expire-date', null);
       let cacheType = "default";
       if (expireCache) {
         expireCache = this.$moment(expireCache, 'YYYY-MM-DD HH:mm');
@@ -215,10 +224,10 @@ export default {
         }
       } else {
         cacheType = 'default'
-        this.$localStorage.set("streams", '[]');
+        this.$ls.set("streams", '[]');
       }
 
-      let data = JSON.parse(this.$localStorage.get("streams", '[]'));
+      let data = JSON.parse(this.$ls.get("streams", '[]'));
       if (data.length > 0) {
         this.streams = data;
       } else {
@@ -261,8 +270,51 @@ export default {
               response[index] = s;
             }
             this.streams = response;
-            this.$localStorage.set('streams-cache-expire-date', this.$moment().add(3, 'h').format('YYYY-MM-DD HH:mm'));
-            //this.$localStorage.set("streams", JSON.stringify(this.streams));
+            this.$ls.set('streams-cache-expire-date', this.$moment().add(3, 'h').format('YYYY-MM-DD HH:mm'));
+            //this.$ls.set("streams", JSON.stringify(this.streams));
+          }); // parses response to JSON
+
+          fetch(waterApi.urls.usgs, {
+          // method: "GET", // *GET, POST, PUT, DELETE, etc.
+          mode: "cors", // no-cors, cors, *same-origin
+          cache: "default", // *default, no-cache, reload, force-cache, only-if-cached
+         
+          })
+          .then(response => response.json())
+          .catch(error => (this.error = error))
+          .then(response => {
+            // eslint-disable-next-line:no-console
+            //response.data = JSON.parse(response.data);
+            let usgstimeseries = response.value.timeSeries;
+            for (let index = 0; index < usgstimeseries.length; index++) {
+              var s = usgstimeseries[index];
+              s.id = index;
+              s.weather = {};
+              
+              // if (!s.county) {
+              //   s.county = '';
+              // }
+              // if (s.amount && s.amount !== "-888.00") {
+              //   // bad data, set to 0
+              //   s.flowAmount = parseFloat(s.amount);
+              // } else {
+              //   s.amount = "0.00";
+              //   s.flowAmount = 0.0;
+              // }
+              // if (s.location && s.location.coordinates) {
+              //   s.location.longitude = s.location.sasdcoordinates[0];
+              //   s.location.latitude = s.location.coordinates[1];
+
+              // } else {
+              //     s.mapLink = '';
+              // }
+              // s.stationId = _.snakeCase(s.station_name);
+
+              // response[index] = s;
+            }
+            this.usgsData = usgstimeseries;
+            //this.$ls.set('streams-cache-expire-date', this.$moment().add(3, 'h').format('YYYY-MM-DD HH:mm'));
+            //this.$ls.set("streams", JSON.stringify(this.streams));
           }); // parses response to JSON
       }
     }
@@ -272,7 +324,7 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
-h3 {
+/* h3 {
   margin: 40px 0 0;
 }
 ul {
@@ -285,5 +337,5 @@ li {
 }
 a {
   color: #42b983;
-}
+} */
 </style>

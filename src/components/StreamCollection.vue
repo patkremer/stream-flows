@@ -1,7 +1,10 @@
 <template>
   <div class="streamCollection">
     <div class="row">
-      <div class="col s12">Colorado Stream Flows
+      
+      <div class="col s12">
+        <h3>Colorado Stream Flows</h3>
+
         <div class="switch">
           <label>
             Table Layout
@@ -15,7 +18,22 @@
         <input v-model="search" id="stream_search" v-on:change="searchChanged($event)" class type="text" placeholder="Search">
         <label for="stream_search">Search Streams by name or county</label>
       </div>
+      <div class="col s12">
+         <label>Filter By Region</label>
+        <select class="browser-default"  v-model="regionId">
+          <option value=" " >None</option>
+          <option value="1" >South Platte</option>
+          <option value="2" >Arkansas</option>
+          <option value="3" >Rio Grande</option>
+          <option value="4" >Gunnison</option>
+          <option value="5" >Colorado</option>
+          <option value="6" >Yampa/White</option>
+          <option value="7" >San Jaun/Dolores</option>
+        </select>
+      </div>
+     
     </div>
+
 
     <div class="row">
       <transition name="fade">
@@ -65,7 +83,8 @@
           v-bind:max="pageCount"
           type="number"
         >
-        <label for="pageNumber">Page Number out of {{pageCount}}</label>
+        <label for="pageNumber">Page Number</label>
+        <span class="helper-text">Out of {{pageCount}}</span>
       </div>
     </div>
     <div v-else>
@@ -86,9 +105,9 @@ export default {
   name: "StreamCollection",
   localStorage: {
     streams: {
-      type: Object,
+      type: Array,
       default: {
-        streams: {}
+        streams: []
       }
     },
   },
@@ -96,11 +115,11 @@ export default {
     return {
       search: "",
       streams: [],
-      usgsData: [],
       pageNumber: 1,
       size: 10,
       error: null,
-      layoutSetting: true
+      layoutSetting: true, 
+      regionId: ' '
     };
   },
 
@@ -124,14 +143,17 @@ export default {
       if (this.search.length > 1) {
       //  this.pageNumber = 1;
       }
-    
+        var self = this;
+
 
       if (this.search) {
-        var self = this;
         
         return _.orderBy(
           this.streams.filter(function(s) {
             if (s.station_name) {
+              if (!s.county) {
+                s.county = '';
+              }
               return s.station_name.toLowerCase().includes(self.search.toLowerCase()) || s.county.toLowerCase().includes(self.search.toLowerCase());
             }
           }),
@@ -141,7 +163,12 @@ export default {
       } else {
         return _.orderBy(
           this.streams.filter(function(s) {
-            return s.flowAmount != 0;
+            var retval =  s.flowAmount != 0;
+            if (self.regionId != ' ') {
+              return retval && s.div == self.regionId;
+
+            }
+            return retval;
           }),
           ["station_name", "county", "date_time"],
           ["asc", "asc", "desc"]
@@ -214,108 +241,33 @@ export default {
       //  .then(response => console.log(response));
     },
     fetchStreamData() {
+      
+
       let expireCache = this.$ls.get('streams-cache-expire-date', null);
-      let cacheType = "default";
+     //let cacheType = "default";
       if (expireCache) {
         expireCache = this.$moment(expireCache, 'YYYY-MM-DD HH:mm');
         let currentDate = this.$moment();
         if (currentDate.isSameOrAfter(expireCache)) {
-          cacheType = "reload";
+          this.$ls.set("streams", '[]');
         }
-      } else {
-        cacheType = 'default'
-        this.$ls.set("streams", '[]');
       }
 
       let data = JSON.parse(this.$ls.get("streams", '[]'));
       if (data.length > 0) {
         this.streams = data;
+    
+
+      //       this.$ls.set('streams-cache-expire-date', this.$moment().add(3, 'h').format('YYYY-MM-DD HH:mm'));
+      //       this.$ls.set("streams", JSON.stringify(this.streams));
       } else {
-        fetch(waterApi.urls.coData, {
-          // method: "GET", // *GET, POST, PUT, DELETE, etc.
-          mode: "cors", // no-cors, cors, *same-origin
-          cache: cacheType, // *default, no-cache, reload, force-cache, only-if-cached
-          headers: {
-            "X-App-Token": apiTokens.codata.appToken
-          }
-        })
-          .then(response => response.json())
-          .catch(error => (this.error = error))
-          .then(response => {
-            // eslint-disable-next-line:no-console
-            //response.data = JSON.parse(response.data);
-            for (let index = 0; index < response.length; index++) {
-              var s = response[index];
-              s.id = index;
-              s.weather = {};
-              if (!s.county) {
-                s.county = '';
-              }
-              if (s.amount && s.amount !== "-888.00") {
-                // bad data, set to 0
-                s.flowAmount = parseFloat(s.amount);
-              } else {
-                s.amount = "0.00";
-                s.flowAmount = 0.0;
-              }
-              if (s.location && s.location.coordinates) {
-                s.location.longitude = s.location.coordinates[0];
-                s.location.latitude = s.location.coordinates[1];
-
-              } else {
-                  s.mapLink = '';
-              }
-              s.stationId = _.snakeCase(s.station_name);
-
-              response[index] = s;
-            }
-            this.streams = response;
-            this.$ls.set('streams-cache-expire-date', this.$moment().add(3, 'h').format('YYYY-MM-DD HH:mm'));
-            //this.$ls.set("streams", JSON.stringify(this.streams));
-          }); // parses response to JSON
-
-          fetch(waterApi.urls.usgs, {
-          // method: "GET", // *GET, POST, PUT, DELETE, etc.
-          mode: "cors", // no-cors, cors, *same-origin
-          cache: "default", // *default, no-cache, reload, force-cache, only-if-cached
-         
-          })
-          .then(response => response.json())
-          .catch(error => (this.error = error))
-          .then(response => {
-            // eslint-disable-next-line:no-console
-            //response.data = JSON.parse(response.data);
-            let usgstimeseries = response.value.timeSeries;
-            for (let index = 0; index < usgstimeseries.length; index++) {
-              var s = usgstimeseries[index];
-              s.id = index;
-              s.weather = {};
-              
-              // if (!s.county) {
-              //   s.county = '';
-              // }
-              // if (s.amount && s.amount !== "-888.00") {
-              //   // bad data, set to 0
-              //   s.flowAmount = parseFloat(s.amount);
-              // } else {
-              //   s.amount = "0.00";
-              //   s.flowAmount = 0.0;
-              // }
-              // if (s.location && s.location.coordinates) {
-              //   s.location.longitude = s.location.sasdcoordinates[0];
-              //   s.location.latitude = s.location.coordinates[1];
-
-              // } else {
-              //     s.mapLink = '';
-              // }
-              // s.stationId = _.snakeCase(s.station_name);
-
-              // response[index] = s;
-            }
-            this.usgsData = usgstimeseries;
-            //this.$ls.set('streams-cache-expire-date', this.$moment().add(3, 'h').format('YYYY-MM-DD HH:mm'));
-            //this.$ls.set("streams", JSON.stringify(this.streams));
-          }); // parses response to JSON
+        waterApi.getCoRiverData()
+        .then(data => {
+          this.streams = _.values(data);
+          //this.$ls.set("streams", JSON.stringify(this.streams));
+          this.$ls.set('streams-cache-expire-date', this.$moment().add(3, 'h').format('YYYY-MM-DD HH:mm'));
+        // this.usgs = data;
+        });
       }
     }
   }

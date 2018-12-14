@@ -12,7 +12,8 @@
     "vue": "^2.5.17",
     "vue-analytics": "^5.16.1",
     "vue-localstorage": "^0.6.2",
-    "vue-moment": "^4.0.0"
+    "vue-moment": "^4.0.0",
+    "vue-resource": "^1.5.1"
   },
   "devDependencies": {
     "@types/lodash": "^4.14.119",

@@ -1,5 +1,5 @@
 <template>
-      <div class="card small grey lighten-5">
+      <div class="card medium grey lighten-5">
         <div class="card-content">
           <span class="card-title">
             {{stream.station_name}}
@@ -9,14 +9,17 @@
             <i class="material-icons left">waves</i>
             <p>
               <b>{{stream.amount}} {{stream.units}}</b>
-              {{stream.date_time | moment("from", "now") }}             <span v-if="stream.county">in {{stream.county}} County</span>
+              {{stream.date_time | moment("from", "now") }} <span v-if="stream.county">in {{stream.county}} County</span>
             </p>
             <br/>
-            <i class="material-icons left">wb_cloudy</i>
-            <p v-if="stream.weather.main">
-              <b>{{stream.weather.main.temp}}&deg; F, {{stream.weather.wind.speed}} mph winds</b>
+            <p >
+              <i class="material-icons left">wb_cloudy</i>
+              <b v-if="stream.weather.main">{{stream.weather.main.temp}}&deg; F, {{stream.weather.wind.speed}} mph winds</b>
+              <a class="btn-flat" v-else v-on:click.once="getWeather(stream)" >Show Weather</a>
             </p>
-             <a class="btn-flat" v-else v-on:click.once="getWeather(stream)" >Show Weather</a>
+            <p>
+              {{stream.data_source}}<br/>
+            </p>
             
           </div>
          

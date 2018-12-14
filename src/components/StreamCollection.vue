@@ -15,7 +15,7 @@
       </div> -->
       <div class="col s12 input-field">
         <input v-model="search" id="stream_search" v-on:change="searchChanged($event)" class type="text" placeholder="Search">
-        <label for="stream_search">Search Streams by name or county</label>
+        <label for="stream_search">Search Streams by name</label>
       </div>
         <div class="col s12">
           <label>Filter By Division</label>
@@ -154,7 +154,8 @@ export default {
               if (!s.county) {
                 s.county = '';
               }
-              return include && (s.station_name.toLowerCase().indexOf(self.search.toLowerCase()) != -1 || s.county.toLowerCase().indexOf(self.search.toLowerCase()) != -1 && hasDiv);
+              //|| s.county.toLowerCase().indexOf(self.search.toLowerCase()) != -1 
+              return include && (s.station_name.toLowerCase().indexOf(self.search.toLowerCase()) != -1 && hasDiv);
             }
           });
       } else {

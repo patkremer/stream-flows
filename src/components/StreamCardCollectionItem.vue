@@ -17,6 +17,7 @@
               <b v-if="stream.weather.main">{{stream.weather.main.temp}}&deg; F, {{stream.weather.wind.speed}} mph winds</b>
               <a class="btn-flat" v-else v-on:click.once="getWeather(stream)" >Show Weather</a>
             </p>
+            <br />
             <p>
               {{stream.data_source}}<br/>
             </p>

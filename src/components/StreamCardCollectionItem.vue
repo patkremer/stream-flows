@@ -16,7 +16,7 @@
           <i class="material-icons left">wb_cloudy</i>
           <b
             v-if="stream.weather.main"
-          >{{stream.weather.main.temp}}&deg; F, {{stream.weather.weather[0].description}} - {{stream.weather.wind.speed}} mph winds
+          >{{stream.weather.main.temp}}&deg; F, {{stream.weather.weather[0].description}}, {{stream.weather.wind.speed}} mph winds
           <br/>
             High: {{stream.weather.main.temp_max}}&deg; F, Low: {{stream.weather.main.temp_min}}&deg; F
           </b>
@@ -123,7 +123,7 @@ export default {
         eventLabel: this.stream.station_name
       });
       // console.log(stream, 'get weather');
-      fetch(
+      this.$http.get(
         weatherApi.getWeatherUrl(
           this.stream.location.latitude,
           this.stream.location.longitude,

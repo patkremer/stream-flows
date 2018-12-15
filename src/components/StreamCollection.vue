@@ -18,7 +18,7 @@
         <label for="stream_search">Search Streams by name</label>
       </div>
         <div class="col s12">
-          <label>Filter By Division</label>
+          <label>Filter By Drainage</label>
           <select class="browser-default"  v-model="regionId">
             <option value=" " >None</option>
             <option value="1" >South Platte</option>
@@ -30,8 +30,7 @@
             <option value="7" >San Jaun/Dolores</option>
           </select>
         </div>
-       
-       
+      
      
     </div>
 
@@ -87,8 +86,11 @@
         <span class="helper-text">Out of {{pageCount}}</span>
       </div>
     </div>
-    <div v-else>
+    <div class="col s12" v-else>
       <h3>Loading... Please wait</h3>
+       <div class="progress">
+        <div class="indeterminate"></div>
+      </div>
     </div>
   </div>
 </template>
@@ -265,9 +267,6 @@ export default {
       if (data.length > 0) {
         this.streams = data;
     
-
-      //       this.$ls.set('streams-cache-expire-date', this.$moment().add(3, 'h').format('YYYY-MM-DD HH:mm'));
-      //       this.$ls.set("streams", JSON.stringify(this.streams));
       } else {
         waterApi.getCoRiverData()
         .then(data => {

@@ -1,7 +1,9 @@
 <template>
   <div class="streamCollection">
     <div class="row">
-      <h3>Colorado Stream Flows</h3>
+      <div class="col s12">
+        <h3>Stream Flows</h3>
+      </div>
       <!-- <div class="col s12">
         <div class="switch col s4">
           <label>
@@ -14,6 +16,7 @@
          
       </div> -->
       <div class="col s12 input-field">
+        <i class="material-icons prefix">search</i>
         <input v-model="search" id="stream_search" v-on:change="searchChanged($event)" class type="text" placeholder="Search">
         <label for="stream_search">Search Streams by name</label>
       </div>
@@ -131,7 +134,7 @@ export default {
 
   updated() {
     // eslint-disable-next-line no-undef
-     M.updateTextFields();
+    M.updateTextFields();
     this.$ls.set('searchValue', this.search);
     this.$ls.set('searchRegion', this.regionId);
   },

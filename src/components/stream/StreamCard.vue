@@ -15,12 +15,13 @@
           >in {{stream.county}} County</span>
         </div>
         <div>
-          <b v-if="stream.weather.main">
+          <weather v-if="stream.weather.main" v-bind:weather="stream.weather"></weather>
+          <!-- <b v-if="stream.weather.main">
             <i class="material-icons left">wb_cloudy</i>
             {{stream.weather.main.temp}}&deg; F, {{stream.weather.weather[0].description}}, {{stream.weather.wind.speed}} mph winds
             <br>
             High: {{stream.weather.main.temp_max}}&deg; F, Low: {{stream.weather.main.temp_min}}&deg; F
-          </b>
+          </b> -->
           <a class="btn-flat btn-large weather-button" v-else v-on:click.once="getWeather(stream)">
             <i class="material-icons left">wb_cloudy</i>Show Current Weather
           </a>
@@ -98,8 +99,9 @@
 
 <script>
 //import StreamCollection from './components/StreamCollection.vue'
-import WeatherForecast from "./WeatherForecast";
-import weatherApi from "../lib/weatherApi.js";
+import WeatherForecast from "../weather/WeatherForecast.vue";
+import Weather from '../weather/Weather.vue';
+import weatherApi from "../../lib/weatherApi.js";
 export default {
   name: "stream-card",
   data: function() {
@@ -109,7 +111,8 @@ export default {
   },
 
   components: {
-    WeatherForecast
+    WeatherForecast,
+    Weather
   },
 
   props: {

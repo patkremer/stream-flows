@@ -1,20 +1,30 @@
 <template>
-    <a v-bind:href="href" v-on:click="go">
+  <li class="sidenav-close" v-bind:class="{ active: isActive }">
+    <v-link v-bind:href="href">
       <slot></slot>
-    </a>
+    </v-link>
+  </li>
 </template>
 
 <script>
-import routes from "../routes";
+import routes from "../../routes";
+import VLink from './VLink.vue'
 export default {
-  name: 'v-link',
+  name: 'nav-link',
   props: {
     href: {
       type: String,
       required: true
     }
   },
-  
+  components: {
+    VLink
+  },
+  computed: {
+    isActive() {
+      return this.href === this.$root.currentRoute;
+    }
+  },
   methods: {
     go(event) {
       event.preventDefault();

@@ -63,8 +63,8 @@
 </template>
 
 <script>
-  import NavLink from '../components/NavLink.vue';
-  import VLink from '../components/VLink.vue'
+  import NavLink from '../components/ui/NavLink.vue';
+  import VLink from '../components/ui/VLink.vue'
   export default {
     components: {
       NavLink,

@@ -10,7 +10,7 @@
 </template>
 
 <script>
-import StreamCollection from './components/StreamCollection.vue'
+import StreamCollection from './components/stream/StreamCollection.vue'
 
 export default {
   name: 'app-view',

@@ -1,6 +1,6 @@
 <template>
  
-<div id="app" >
+<div id="" >
     <pre v-if="error">
       {{error}}
     </pre>
@@ -13,7 +13,7 @@
 import StreamCollection from './components/StreamCollection.vue'
 
 export default {
-  name: 'app',
+  name: 'app-view',
   data: function() {
     return {
         error: null
@@ -30,14 +30,5 @@ export default {
 </script>
 
 <style>
-#app {
-  font-family: 'Avenir', Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  /* text-align: center; */
-  color: #2c3e50;
-  margin-top: 10px;
-  /* padding-left: 20px;
-  padding-right: 20px; */
-}
+
 </style>

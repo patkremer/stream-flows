@@ -1,5 +1,6 @@
 import Vue from 'vue'
-import App from './App.vue'
+import routes from './routes';
+import NotFound from './pages/404.vue';
 import VueLocalStorage from 'vue-localstorage'
 import moment from 'vue-moment'
 import VueAnalytics from 'vue-analytics';
@@ -23,6 +24,22 @@ Vue.use(VueLocalStorage, {
 Vue.use(moment);
 Vue.config.productionTip = false
 
-new Vue({
-  render: h => h(App),
-}).$mount('#app');
+const app = new Vue({
+  el: '#app',
+  data: {
+    currentRoute: window.location.pathname
+  },
+  computed: {
+    ViewComponent() {
+      return routes[this.currentRoute] || NotFound;
+    }
+  },
+  render (h) {
+    return h(this.ViewComponent); 
+  },
+});
+
+
+window.addEventListener('popstate', () => {
+  app.currentRoute = window.location.pathname;
+});

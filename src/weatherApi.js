@@ -4,6 +4,9 @@ import apiTokens from "./apiTokens";
 
 
 export default {
+    weatherBase: 'http://api.openweathermap.org/data/2.5/',
+    appId: '&units=imperial&APPID=',
+    
     getWeatherUrl: function (lat, lon) {
         //
         //return this.weatherBase + 'forecast?lat=' + lat + '&lon=' + lon + this.appId + appId;
@@ -14,8 +17,7 @@ export default {
         return Vue.http.get(this.weatherBase + 'forecast?lat=' + lat + '&lon=' + lon + this.appId + apiTokens.openWeatherMap)
             .then(response => { return response.json() });
     },
-    weatherBase: 'http://api.openweathermap.org/data/2.5/',
-    appId: '&units=imperial&APPID=',
+   
 
    
 }

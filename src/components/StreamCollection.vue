@@ -1,7 +1,7 @@
 <template>
   <div class="streamCollection">
     <div class="row">
-      <div class="col s12">
+      <div class="col s12 m12">
         <h3>Stream Flows</h3>
       </div>
       <!-- <div class="col s12">
@@ -46,7 +46,7 @@
 
     <div class="row" v-if="streams.length > 0">
       <div class="col s3 m3 l2 xl2">
-        <button v-scroll-to="'#streamCollections'"
+        <button v-scroll-to="'#stream_search'"
           class="btn-floating teal darken-2 waves-effect waves-light"
           type="button"
           v-bind:disabled="pageNumber==1"
@@ -54,7 +54,7 @@
         >
           <i class="material-icons right">keyboard_arrow_left</i>
         </button>
-        <button v-scroll-to="'#streamCollections'"
+        <button v-scroll-to="'#stream_search'"
           class="btn-floating teal darken-2 waves-effect waves-light"
           type="button"
           v-bind:disabled="pageNumber >= pageCount"

@@ -13,14 +13,21 @@
           <span v-if="stream.county">in {{stream.county}} County</span>
         </div>
         <div>
-          <i class="material-icons left">wb_cloudy</i>
           <b
             v-if="stream.weather.main"
-          >{{stream.weather.main.temp}}&deg; F, {{stream.weather.weather[0].description}}, {{stream.weather.wind.speed}} mph winds
+          >
+          <i class="material-icons left">wb_cloudy</i>
+
+          {{stream.weather.main.temp}}&deg; F, {{stream.weather.weather[0].description}}, {{stream.weather.wind.speed}} mph winds
           <br/>
             High: {{stream.weather.main.temp_max}}&deg; F, Low: {{stream.weather.main.temp_min}}&deg; F
           </b>
-          <a class="btn-flat weather-button" v-else v-on:click.once="getWeather(stream)">Show Weather</a>
+          <a class="btn-flat btn-large weather-button" v-else v-on:click.once="getWeather(stream)"><i class="material-icons left">wb_cloudy</i>Show Current Weather</a>
+        </div>
+        <div>
+         
+          <a class="btn-large btn-flat weather-button activator"  v-on:click.once="getForecastClick()"><i class="material-icons left">wb_cloudy</i>Show 5 Day Weather Forecast</a>
+         
         </div>
          <div>  
           <span v-if="stream.station_status">
@@ -34,7 +41,20 @@
       </div>
       <!--  -->
     </div>
-    <div class="card-action">
+    <div class="card-reveal">
+      <span class="card-title grey-text text-darken-4">5 Day Weather Forecast<i class="material-icons right">close</i></span>
+      <p>This feature is on it's way! </p> 
+      <b
+            v-if="stream.weather.main"
+          >
+          <i class="material-icons left">wb_cloudy</i>
+
+          {{stream.weather.main.temp}}&deg; F, {{stream.weather.weather[0].description}}, {{stream.weather.wind.speed}} mph winds
+          <br/>
+            High: {{stream.weather.main.temp_max}}&deg; F, Low: {{stream.weather.main.temp_min}}&deg; F
+          </b>
+    </div>
+    <div class="card-action center">
       <!-- <a
             v-on:click="getHistory(stream.usgs_station_id)"
             class="btn-floating waves-effect waves-light"
@@ -42,8 +62,11 @@
             <i class="material-icons medium">history</i>
       </a>-->
       <!-- <br> -->
+      <!-- <a class="btn-small btn-flat waves-effect waves-light teal-text text-darken-2 activator"  v-on:click.once="getForecastClick()"><i class="material-icons left">wb_cloudy</i>Forecast</a> -->
+      
+
       <a
-        class="btn waves-effect waves-light teal darken-2"
+        class="btn-small btn-flat waves-effect waves-light teal-text text-darken-2"
         v-on:click="getMapClick()"
         v-if="getMapLink(stream)"
         target="_blank"
@@ -57,10 +80,10 @@
         v-on:click="viewSourceClick()"
         v-bind:href="stream.http_linkage"
         target="_blank"
-        class="btn waves-effect waves-light teal darken-2"
+        class="btn-small btn-flat waves-effect waves-light teal-text text-darken-2"
       >
-        <i class="material-icons medium left">show_chart</i>
-        Detail Graph
+        <i class="material-icons left">show_chart</i>
+        Detail
       </a>
     </div>
   </div>
@@ -69,8 +92,6 @@
 <script>
 //import StreamCollection from './components/StreamCollection.vue'
 import weatherApi from "../weatherApi.js";
-import apiTokens from "../apiTokens.js";
-
 export default {
   name: "stream-card-collection-item",
   data: function() {
@@ -82,6 +103,16 @@ export default {
   props: {
     stream: {
       required: true
+    }
+  },
+
+  computed: {
+    forecast() {
+      if(this.stream.forecast) {
+        return this.stream.forecast;
+      } else {
+        return null;
+      }
     }
   },
 
@@ -116,6 +147,19 @@ export default {
         return "";
       }
     },
+    getForecastClick() {
+      this.$ga.event({
+        eventCategory: "click",
+        eventAction: "getForecast",
+        eventLabel: this.stream.station_name
+      });
+      // var self = this;
+      // weatherApi.getForecast(this.stream.location.latitude,
+      //     this.stream.location.longitude)
+      //       .then(response => {
+      //         self.stream.forecast = response;
+      //       });
+    },
     getWeather() {
       this.$ga.event({
         eventCategory: "click",
@@ -127,8 +171,7 @@ export default {
       this.$http.get(
         weatherApi.getWeatherUrl(
           this.stream.location.latitude,
-          this.stream.location.longitude,
-          apiTokens.openWeatherMap
+          this.stream.location.longitude
         ),
         {
           mode: "cors"
@@ -151,7 +194,7 @@ export default {
   height: 28px;
 }
 .card.stream-card {
-  height: 325px;
+  height: 350px;
 }
 .card .card-content .card-info {
   overflow: auto;    

@@ -120,6 +120,7 @@ export default {
       this.$ga.event({
         eventCategory: "click",
         eventAction: "getWeather",
+        //eventAction: "getWeather",
         eventLabel: this.stream.station_name
       });
       // console.log(stream, 'get weather');

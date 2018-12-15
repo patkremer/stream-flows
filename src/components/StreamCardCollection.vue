@@ -2,14 +2,14 @@
  
 <div class="stream-card-collection" >
   <div class="col s12 md6 lg3 xl4" v-for="(stream) in streams" :key="stream.id">
-     <stream-card-collection-item v-bind:stream.sync="stream" ></stream-card-collection-item>
+     <stream-card v-bind:stream.sync="stream" ></stream-card>
   </div>
 </div>
 
 </template>
 
 <script>
-import StreamCardCollectionItem from './StreamCardCollectionItem.vue'
+import StreamCard from './StreamCard.vue'
 
 export default {
   name: 'stream-card-collection',
@@ -25,7 +25,7 @@ export default {
       }
   },
   components: {
-    StreamCardCollectionItem
+    StreamCard
   },
 
   

@@ -1,6 +1,6 @@
 "use strict";
-import Vue from "vue";
-import apiTokens from "./apiTokens";
+import axios from "axios";
+import apiTokens from "../apiTokens";
 import _ from "lodash";
 
 export default {
@@ -11,6 +11,7 @@ export default {
 
       s.id = index;
       s.weather = {};
+      s.forecast = {};
       if (!s.county) {
         s.county = "";
       }
@@ -29,14 +30,14 @@ export default {
       }
       s.stationId = _.snakeCase(s.station_name);
 
-      this.checkduplicates(data, s);
+      this.checkDuplicatesAndAdd(data, s);
 
       //response[index] = s;
     }
     return data;
   },
 
-  checkduplicates: function(data, s) {
+  checkDuplicatesAndAdd: function(data, s) {
     
     if (data[s.stationId]) {
       if (s.qualifiers && s.qualifiers.indexOf("Ice") != -1) {
@@ -81,6 +82,7 @@ export default {
       var d = {};
       d.id = index + 1000;
       d.weather = {};
+      d.forecast = {};
       d.usgs_station_id = s.sourceInfo.siteCode[0].value;
       d.station_name = _.trimEnd(s.sourceInfo.siteName, ", CO");
       d.location = {};
@@ -106,36 +108,32 @@ export default {
         "https://waterdata.usgs.gov/nwis/uv?" + d.usgs_station_id;
       d.data_source = "U.S. Geological Survey";
       //if (!d.qualifiers == "A") {
-      this.checkduplicates(data, d);
+      this.checkDuplicatesAndAdd(data, d);
 
       // }
     }
     return data;
   },
   getCoRiverData: function() {
-    let data = [];
+    let data = {};
 
     var promise = new Promise((resolve, reject) => {
       let header = this.urls.getCoDataHeader();
-      let coData = Vue.http
-        .get(this.urls.coData, { headers: header })
-        .then(response => {
-          return response.json();
-        });
 
-      let usgsData = Vue.http.get(this.urls.usgs).then(response => {
-        return response.json();
-      });
+      let getCoData = axios.get(this.urls.coData, { headers: header });
 
-      Promise.all([coData, usgsData])
-        .then(responses => {
-          data = this.parseCoDataResponse(responses[0], data);
-          data = this.parseUsgsResponse(responses[1], data);
+      let getUsgsData = axios.get(this.urls.usgs);
+      axios.all([getCoData, getUsgsData])
+        .then(axios.spread(function (coData, usgsData) {
+          // Both requests are now complete
+          this.parseCoDataResponse(coData.data, data);
+          this.parseUsgsResponse(usgsData.data, data);
           resolve(data);
-        })
+        }.bind(this)))
         .catch(error => {
+          //console.log(error);
+
           reject(error);
-          //console.error(error);
         });
     });
 

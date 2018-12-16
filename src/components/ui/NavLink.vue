@@ -7,7 +7,7 @@
 </template>
 
 <script>
-import routes from "../../routes";
+
 import VLink from './VLink.vue'
 export default {
   name: 'nav-link',
@@ -25,14 +25,7 @@ export default {
       return this.href === this.$root.currentRoute;
     }
   },
-  methods: {
-    go(event) {
-      event.preventDefault();
-    
-      this.$root.currentRoute = this.href;
-      window.history.pushState(null, routes[this.href], this.href);
-    }
-  }
+  
 };
 </script>
 

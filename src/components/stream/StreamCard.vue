@@ -14,7 +14,7 @@
             v-if="stream.county"
           >in {{stream.county}} County</span>
         </div>
-        <div>
+        <div v-if="hasLatAndLong">
           <weather v-if="stream.weather.main" v-bind:weather="stream.weather"></weather>
           <!-- <b v-if="stream.weather.main">
             <i class="material-icons left">wb_cloudy</i>
@@ -26,12 +26,12 @@
             <i class="material-icons left">wb_cloudy</i>Show Current Weather
           </a>
         </div>
-        <div>
+        <div v-if="hasLatAndLong">
           <a
             class="btn-large btn-flat weather-button activator"
             v-on:click.once="getForecastClick(stream)"
           >
-            <i class="material-icons left">wb_cloudy</i>Show 5 Day Weather Forecast
+            <i class="material-icons left">filter_drama</i>Show 5 Day Weather Forecast
           </a>
         </div>
         <div>
@@ -51,7 +51,6 @@
         5 Day Weather Forecast
         <i class="material-icons right">close</i>
       </span>
-      <p>This feature is on it's way!</p>
       <weather-forecast v-bind:forecast.sync="forecast"></weather-forecast>
       <!-- <ul class="collection" v-if="forecast">
         <li class="collection-item" v-for="(f) in forecast.list" v-bind:key="f.dt">
@@ -122,6 +121,11 @@ export default {
   },
 
   computed: {
+    hasLatAndLong() {
+      return this.stream.location &&
+        this.stream.location.latitude &&
+        this.stream.location.longitude;
+    },
     forecast() {
       if (this.stream.forecast && this.stream.forecast.list) {
         return this.stream.forecast;
@@ -169,17 +173,17 @@ export default {
         eventAction: "getForecast",
         eventLabel: this.stream.station_name
       });
-      if (!this.stream.forecast.list) {
+    //  if (!this.stream.forecast.list) {
         weatherApi
           .getForecast(
             this.stream.location.latitude,
             this.stream.location.longitude
           )
           .then(response => {
-            this.stream.forecast = response.data;
+            this.stream.forecast = response;
           })
           .catch(error => (this.error = error));
-      }
+      //}
     },
     getWeather() {
       this.$ga.event({

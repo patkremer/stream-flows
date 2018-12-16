@@ -99,7 +99,7 @@
 </template>
 
 <script>
-import waterApi from '../../lib/waterApi.js';
+import waterApi from '../../data/waterApi.js';
 import apiTokens from '../../apiTokens.js';
 import _ from "lodash";
 import StreamTableCollection from "./StreamTableCollection.vue";

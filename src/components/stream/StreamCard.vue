@@ -100,7 +100,7 @@
 //import StreamCollection from './components/StreamCollection.vue'
 import WeatherForecast from "../weather/WeatherForecast.vue";
 import Weather from '../weather/Weather.vue';
-import weatherApi from "../../lib/weatherApi.js";
+import weatherApi from "../../data/weatherApi.js";
 export default {
   name: "stream-card",
   data: function() {

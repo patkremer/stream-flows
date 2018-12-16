@@ -18,7 +18,11 @@ export default {
   methods: {
     go(event) {
       event.preventDefault();
-    
+      this.$ga.event({
+          eventCategory: "menuClick",
+          eventAction: "clickedNavLink",
+          eventLabel: this.href
+        });
       this.$root.currentRoute = this.href;
       window.history.pushState(null, routes[this.href], this.href);
     }

@@ -42,7 +42,6 @@
           </div>
       <li><div class="divider"></div></li>
       <nav-link href="/"><i class="material-icons left">home</i> Home</nav-link>
-     
       <nav-link href="/about"><i class="material-icons left">info</i>About</nav-link>
     </ul>
     <a href="#" data-target="slide-out" class="sidenav-trigger btn-small white-text grey darken-4"><i class="material-icons">menu</i></a>

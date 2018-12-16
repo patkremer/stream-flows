@@ -1,6 +1,7 @@
 "use strict";
 import axios from "axios";
 import apiTokens from "../apiTokens";
+import _ from 'lodash';
 
 export default {
   weatherBase: "http://api.openweathermap.org/data/2.5/",
@@ -22,16 +23,38 @@ export default {
     );
   },
 
+  parseForecastData: function (data) {
+    for (let i = 0; i < data.list.length; i++) {
+      var weatherData = data.list[i];
+      weatherData.groupByDate = weatherData.dt_txt.split(' ')[0];
+      data.list[i] = weatherData;
+    }
+    var groupBy = _.groupBy(data.list, 'groupByDate');
+
+    data.forecastsByDay = groupBy;
+    return data;
+  },
+
   getForecast: function(lat, lon) {
-    return axios.get(
-      this.weatherBase +
-        "forecast?lat=" +
-        lat +
-        "&lon=" +
-        lon +
-        this.appId +
-        apiTokens.openWeatherMap
-    );
+    var promise = new Promise((resolve, reject) => {
+      axios.get(
+        this.weatherBase +
+          "forecast?lat=" +
+          lat +
+          "&lon=" +
+          lon +
+          this.appId +
+          apiTokens.openWeatherMap
+      ).then(response => {
+        let retval = this.parseForecastData(response.data);
+        resolve(retval);
+      })
+      .catch(error => {
+        reject(error);
+      });
+
+    });
+    return promise;
     // .then(response => { return response.json() })
   }
 };

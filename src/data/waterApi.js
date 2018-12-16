@@ -38,12 +38,21 @@ export default {
   },
 
   checkDuplicatesAndAdd: function(data, s) {
-    
-    if (data[s.stationId]) {
-      if (s.qualifiers && s.qualifiers.indexOf("Ice") != -1) {
+    if (s.qualifiers) {
+      if (s.qualifiers.indexOf("Ice") != -1) {
         s.amount = "Ice";
         s.units = "";
         s.flowAmount = 0.0;
+      }
+      if (s.qualifiers.indexOf("Ssn") != -1) {
+        s.amount = (s.amount == 'Ice') ? s.amount + ', seasonally monitored' : 'seasonally monitored';
+        s.units = "";
+        s.flowAmount = 0.0;
+      }
+    }
+
+    if (data[s.stationId]) {
+      if (s.qualifiers && s.qualifiers.indexOf("Ice") != -1) {
         data[s.stationId].qualifiers = "Ice";
         data[s.stationId].amount = "Ice";
         data[s.stationId].units = "";
@@ -59,12 +68,6 @@ export default {
       //   }
       //   data[s.stationId].duplicates.push(s);
     } else {
-      if (s.qualifiers && s.qualifiers.indexOf("Ice") != -1) {
-        s.amount = "Ice";
-        s.units = "";
-        s.flowAmount = 0.0;
-      }
-
       if (s.amount.indexOf('-999')  != -1 || s.amount.indexOf('-888')  != -1) {
         s.amount = 'Ice or Inactive';
         s.units = "";

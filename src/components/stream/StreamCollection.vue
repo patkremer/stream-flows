@@ -137,6 +137,7 @@ export default {
     M.updateTextFields();
     this.$ls.set('searchValue', this.search);
     this.$ls.set('searchRegion', this.regionId);
+    this.$ls.set('streams', JSON.stringify(this.streams));
   },
 
   computed: {

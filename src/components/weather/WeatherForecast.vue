@@ -83,6 +83,7 @@ export default {
   components: {
     Weather
   },
+
   updated: function () {
     var elems = document.querySelectorAll('.collapsible.expandable');
     // eslint-disable-next-line no-undef

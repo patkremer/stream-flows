@@ -6,6 +6,7 @@ import moment from 'vue-moment'
 import VueAnalytics from 'vue-analytics';
 import VueScrollTo from 'vue-scrollto';
 
+
 Vue.use(VueScrollTo);
 Vue.use(VueAnalytics, {
   id: 'UA-125445562-2',

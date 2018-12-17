@@ -1,17 +1,14 @@
 <template>
   <main-layout>
-    <div class="row">
-      <div class="s12">
-        <h2>Data Charts with River Data</h2>
-      </div>
-    </div>
-    <div class="row">
+  
+    <div class="row white">
       <div class="col s12">
          <GChart class="large-chart"
             type="ScatterChart"
             :data="chartData"
             :options="chartOptions"
-            :settings="{ packages: ['corechart']}"
+            :settings="{ packages: ['scatter']}"
+            :createChart="(el, google) => new google.charts.Scatter(el)"
           />
       </div>
       <div class="col s12">
@@ -19,20 +16,33 @@
             type="ScatterChart"
             :data="byDivisionChartData"
             :options="byDivisionChartOptions"
-            :settings="{ packages: ['corechart']}"
+            :settings="{ packages: ['bar']}"
+            :createChart="(el, google) => new google.charts.Bar(el)"
+          />
+      </div>
+      <div class="col s12">
+         <GChart class="large-chart"
+            type="ScatterChart"
+            :data="totalDrainageCfsChartData"
+            :options="totalDrainageCfsChartOptions"
+            :settings="{ packages: ['bar']}"
+             :createChart="(el, google) => new google.charts.Bar(el)"
           />
       </div>
     </div>  
   </main-layout>
   
-</template>
+</template> 
 
 <script>
+import Vue from 'vue';
 import MainLayout from "../layouts/Main.vue";
 import waterApi from '../data/waterApi';
 import { GChart } from 'vue-google-charts';
 import _ from "lodash";
 //pie chart
+//https://developers.google.com/chart/interactive/docs/gallery/scatterchart
+//https://github.com/devstark-com/vue-google-charts?ref=madewithvuejs.com
 export default {
   name: 'charts',
   data() {
@@ -40,20 +50,29 @@ export default {
       processedData: {},
       streams: [],
       byDivisionChartData: [
-        ['Drainage', 'Number of Streams'],
+        ['Drainage', 'Number of Stream Gauges'],
       ],
       byDivisionChartOptions: {
          chart: {
-          title: 'Number of Rivers Per Drainage',
+          title: 'Number of Stream Gauges Per Drainage',
+        }
+      },
+      totalDrainageCfsChartData: [
+        ['Drainage', 'Total CFS Recorded'],
+      ],
+      totalDrainageCfsChartOptions: {
+         chart: {
+          title: 'Total CFS Recorded Per Drainage',
         }
       },
       chartData: [
-        ['County', 'Number of Streams'],
+        ['County', 'Number of Streams Gauges'],
 
       ],
       chartOptions: {
          chart: {
-          title: 'Number of Rivers Per County',
+          title: 'Stream Gauges Per County',
+          subtitle: ''
         }
       }
     }
@@ -64,44 +83,49 @@ export default {
 
     ]
     this.streams = JSON.parse(this.$ls.get('streams'), '[]');
+     let today = Vue.moment();
      _.forEach(this.streams, function (value) {
-       if (value.county != ' ') {
+       if (today.diff(Vue.moment(value.date_time),'days') > 10) {
+          value.flowAmount = 0;
+       }
+       if (value.station_name == 'RIDGES BASIN DAM ON LAKE NIGHTHORSE NEAR DURANGO') {
+         value.flowAmount = 0;
+       }
+       if (value.county != ' ' && value.county != '') {
         wordtreeData.push([value.station_name + ', ' + value.county]);
        } else {
-         value.county = 'Unavailable';
+         value.county = 'Unknown';
        }
        value.drainage = waterApi.getWaterDrainage(value.div);
     });
-    let drainageData = [
-        ['Drainage', 'Number of Streams'],
-      ];
+    
     let byDrainage = _.groupBy(this.streams, function (a) {
       return a.drainage;
     });
     let self = this;
      _.forEach(byDrainage, function (value, key) {
-       if (key == 'N/A') {
-         console.log(value);
-       }
-        self.byDivisionChartData.push([key, value.length]);
+      //  if (key == 'N/A') {
+      //    console.log(value);
+      //  }
+        if (key !== 'Unknown') {
+          self.totalDrainageCfsChartData.push([key, _.sumBy(value, 'flowAmount')]);
+          self.byDivisionChartData.push([key, value.length]);
+        } 
+        
     });
     //self.byDivisionChartData = drainageData;
     //this.chartData = wordtreeData;
     this.processedData = _.groupBy(this.streams, function (a) {
       return a.county;
     });
-    let pieChartData = [
-       ['County', 'Number of Streams']
-    ];
     
    
     _.forEach(this.processedData, function (value, key) {
       if (key != 'Unknown') {
 
-        pieChartData.push([key, value.length]);
+         self.chartData.push([key, value.length]);
       }
     });
-    this.chartData = pieChartData;
    // _.includes({ 'a': 1, 'b': 2 }, 1);
 // => true
   },
@@ -115,7 +139,7 @@ export default {
 //https://vue-chartjs.org/guide/#creating-your-first-chart
 <style>
 .large-chart {
-  min-width: 900px;
-  min-height: 800px;
+  min-width: 500px;
+  min-height: 500px;
 }
 </style>

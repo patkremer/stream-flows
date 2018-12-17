@@ -36,7 +36,7 @@ export default {
       name = 'San Jaun/Dolores';
       break;
       default:
-        name = 'N/A';
+        name = 'Unknown';
         break;
     }
     return name;
@@ -54,7 +54,7 @@ export default {
       }
       if (s.amount && s.amount !== "-888.00") {
         // bad data, set to 0
-        s.flowAmount = parseFloat(s.amount);
+        s.flowAmount = _.toNumber(s.amount);
       } else {
         s.amount = "0.00";
         s.flowAmount = 0.0;
@@ -138,7 +138,7 @@ export default {
       d.fromUsgs = true;
       if (d.amount) {
         // bad data, set to 0
-        d.flowAmount = parseFloat(s.amount);
+        d.flowAmount = _.toNumber(s.amount);
       } else {
         d.amount = "0.00";
         d.flowAmount = 0.0;

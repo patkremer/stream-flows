@@ -11,18 +11,18 @@
             :createChart="(el, google) => new google.charts.Scatter(el)"
           />
       </div>
-      <div class="col s12">
+      <!-- <div class="col s12">
          <GChart class="large-chart"
-            type="ScatterChart"
+            type="BarChart"
             :data="byDivisionChartData"
             :options="byDivisionChartOptions"
             :settings="{ packages: ['bar']}"
             :createChart="(el, google) => new google.charts.Bar(el)"
           />
-      </div>
+      </div> -->
       <div class="col s12">
          <GChart class="large-chart"
-            type="ScatterChart"
+            type="BarChart"
             :data="totalDrainageCfsChartData"
             :options="totalDrainageCfsChartOptions"
             :settings="{ packages: ['bar']}"
@@ -50,29 +50,44 @@ export default {
       processedData: {},
       streams: [],
       byDivisionChartData: [
-        ['Drainage', 'Number of Stream Gauges'],
+        ['Drainage', 'Gauges'],
       ],
       byDivisionChartOptions: {
+         bars: 'horizontal',
          chart: {
           title: 'Number of Stream Gauges Per Drainage',
+          bars: 'horizontal'
         }
       },
       totalDrainageCfsChartData: [
-        ['Drainage', 'Total CFS Recorded'],
+        ['Drainage', 'cfs', 'gauges'],
       ],
       totalDrainageCfsChartOptions: {
+         bars: 'horizontal',
          chart: {
-          title: 'Total CFS Recorded Per Drainage',
-        }
+          title: 'Total CFS and Gauges Per Drainage',
+          bars: 'horizontal'
+        },
+         series: {
+            0: { axis: 'cfs' }, // Bind series 0 to an axis named 'distance'.
+            1: { axis: 'gauges' } // Bind series 1 to an axis named 'brightness'.
+          },
+          axes: {
+            x: {
+              cfs: {label: 'cfs', side: 'top'}, // Bottom x-axis.
+              gauges: {label: 'gauges'} // Top x-axis.
+            }
+          }
       },
       chartData: [
-        ['County', 'Number of Streams Gauges'],
+        ['County', 'Gauges'],
 
       ],
       chartOptions: {
+
          chart: {
           title: 'Stream Gauges Per County',
-          subtitle: ''
+          subtitle: '',
         }
       }
     }
@@ -108,7 +123,7 @@ export default {
       //    console.log(value);
       //  }
         if (key !== 'Unknown') {
-          self.totalDrainageCfsChartData.push([key, _.sumBy(value, 'flowAmount')]);
+          self.totalDrainageCfsChartData.push([key, _.sumBy(value, 'flowAmount'),value.length]);
           self.byDivisionChartData.push([key, value.length]);
         } 
         
@@ -139,7 +154,6 @@ export default {
 //https://vue-chartjs.org/guide/#creating-your-first-chart
 <style>
 .large-chart {
-  min-width: 500px;
-  min-height: 500px;
+   min-height: 400px;
 }
 </style>

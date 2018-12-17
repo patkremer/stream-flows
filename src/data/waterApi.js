@@ -2,8 +2,45 @@
 import axios from "axios";
 import apiTokens from "../apiTokens";
 import _ from "lodash";
-
+{/* <option value="1" >South Platte</option>
+<option value="2" >Arkansas</option>
+<option value="3" >Rio Grande</option>
+<option value="4" >Gunnison</option>
+<option value="5" >Colorado</option>
+<option value="6" >Yampa/White</option>
+<option value="7" >San Jaun/Dolores</option> */}
 export default {
+  getWaterDrainage: function (div) {
+    let name = '';
+    
+    switch (div) {
+      case '1':
+        name = 'South Platte';
+        break;
+      case '2':
+        name = 'Arkansas';
+      break;
+      case '3':
+      name = 'Rio Grande';
+      break;
+      case '4':
+      name = 'Gunnison';
+      break;
+      case '5':
+      name = 'Colorado';
+      break;
+      case '6':
+      name = 'Yampa/White';
+      break;
+      case '7':
+      name = 'San Jaun/Dolores';
+      break;
+      default:
+        name = 'N/A';
+        break;
+    }
+    return name;
+  },
   parseCoDataResponse: function(response, data) {
     //ar data = {};
     for (let index = 0; index < response.length; index++) {
@@ -89,7 +126,7 @@ export default {
 
       d.location.longitude = s.sourceInfo.geoLocation.geogLocation.longitude;
       d.location.latitude = s.sourceInfo.geoLocation.geogLocation.latitude;
-
+      d.county = 'Unknown';
       d.units = "CFS";
       d.amount = s.values[0].value[0].value;
       d.date_time = s.values[0].value[0].dateTime;

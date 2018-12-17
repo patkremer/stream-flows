@@ -5,7 +5,9 @@ import VueLocalStorage from 'vue-localstorage'
 import moment from 'vue-moment'
 import VueAnalytics from 'vue-analytics';
 import VueScrollTo from 'vue-scrollto';
+import VueGoogleCharts from 'vue-google-charts';
 
+Vue.use(VueGoogleCharts);
 Vue.use(VueScrollTo);
 Vue.use(VueAnalytics, {
   id: 'UA-125445562-2',

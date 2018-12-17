@@ -151,7 +151,7 @@ export default {
       if (this.search) {
         
           returnData = this.streams.filter(function(s) {
-            var include =  !(self.$moment(s.date_time).diff(today, 'days') <= -120);
+            var include =  !(today.diff(self.$moment(s.date_time),'days') > 30);
             var hasDiv = true;
             if (self.regionId != ' ') {
               hasDiv = s.div == self.regionId;
@@ -167,7 +167,7 @@ export default {
       } else {
           returnData = this.streams.filter(function(s) {
 
-            var include =  !(self.$moment(s.date_time).diff(today, 'days') <= -120);
+            var include =   !(today.diff(self.$moment(s.date_time),'days') > 30);
 
             if (self.regionId != ' ') {
               return include && s.div == self.regionId;

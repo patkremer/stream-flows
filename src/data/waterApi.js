@@ -110,8 +110,9 @@ export default {
         s.units = "";
         s.flowAmount = 0.0;
       }
-
-      data[s.stationId] = s;
+      if (!_.includes(s.station_name, 'ARF HEADGATE')) {
+        data[s.stationId] = s;
+      }
     }
   },
 

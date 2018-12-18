@@ -2,7 +2,16 @@
   <div class="card small grey lighten-5 stream-card">
     <div class="card-content">
       <span class="card-title">
-        {{stream.station_name}}
+        <a
+        class="waves-effect waves-light"
+        v-bind:class="{ 'teal-text': !stream.isFavorite, 'text-darken-2': !stream.isFavorite}"
+        v-on:click="saveToFavorites()"
+      >
+        <i
+          v-bind:class="{'amber-text': stream.isFavorite, 'text-accent-4': stream.isFavorite}"
+          class="material-icons small"
+        >star</i>
+      </a> {{stream.station_name}}
         <!-- <small class="truncate">{{stream.stationId}}</small> -->
       </span>
       <div class="card-info">
@@ -16,12 +25,7 @@
         </div>
         <div v-if="hasLatAndLong">
           <weather v-if="stream.weather.main" v-bind:weather="stream.weather"></weather>
-          <!-- <b v-if="stream.weather.main">
-            <i class="material-icons left">wb_cloudy</i>
-            {{stream.weather.main.temp}}&deg; F, {{stream.weather.weather[0].description}}, {{stream.weather.wind.speed}} mph winds
-            <br>
-            High: {{stream.weather.main.temp_max}}&deg; F, Low: {{stream.weather.main.temp_min}}&deg; F
-          </b> -->
+         
           <a class="btn-flat btn-large weather-button" v-else v-on:click.once="getWeather(stream)">
             <i class="material-icons left">wb_cloudy</i>Show Current Weather
           </a>
@@ -52,18 +56,7 @@
         <i class="material-icons right">close</i>
       </span>
       <weather-forecast v-bind:forecast.sync="forecast"></weather-forecast>
-      <!-- <ul class="collection" v-if="forecast">
-        <li class="collection-item" v-for="(f) in forecast.list" v-bind:key="f.dt">
-           <b
-            v-if="f.main"
-          >
-
-          {{f.main.temp}}&deg; F, {{f.weather[0].description}}, {{f.wind.speed}} mph winds
-          <br/>
-            High: {{f.main.temp_max}}&deg; F, Low: {{f.main.temp_min}}&deg; F
-          </b>
-        </li>
-      </ul>-->
+     
       <b v-if="stream.weather.main">
         <i class="material-icons left">wb_cloudy</i>
         {{stream.weather.main.temp}}&deg; F, {{stream.weather.weather[0].description}}, {{stream.weather.wind.speed}} mph winds
@@ -72,6 +65,7 @@
       </b>
     </div>
     <div class="card-action center">
+    
       <a
         class="btn-small btn-flat waves-effect waves-light teal-text text-darken-2"
         v-on:click="getMapClick()"
@@ -97,10 +91,11 @@
 </template>
 
 <script>
-//import StreamCollection from './components/StreamCollection.vue'
 import WeatherForecast from "../weather/WeatherForecast.vue";
-import Weather from '../weather/Weather.vue';
+import Weather from "../weather/Weather.vue";
 import weatherApi from "../../data/weatherApi.js";
+import _ from "lodash";
+
 export default {
   name: "stream-card",
   data: function() {
@@ -122,9 +117,11 @@ export default {
 
   computed: {
     hasLatAndLong() {
-      return this.stream.location &&
+      return (
+        this.stream.location &&
         this.stream.location.latitude &&
-        this.stream.location.longitude;
+        this.stream.location.longitude
+      );
     },
     forecast() {
       if (this.stream.forecast && this.stream.forecast.list) {
@@ -137,6 +134,27 @@ export default {
   },
 
   methods: {
+    saveToFavorites() {
+      this.$ga.event({
+        eventCategory: "click",
+        eventAction: "saveFavorite",
+        eventLabel: this.stream.station_name
+      });
+      let favorites = JSON.parse(this.$ls.get("favoriteStreams", "[]"));
+      let self = this;
+      if (_.includes(favorites, this.stream.stationId)) {
+        this.stream.isFavorite = false;
+        _.remove(favorites, function(s) {
+          return s === self.stream.stationId;
+        });
+      } else {
+        this.stream.isFavorite = true;
+        favorites.push(this.stream.stationId);
+      }
+
+      this.$ls.set("favoriteStreams", JSON.stringify(favorites));
+    },
+
     getMapClick() {
       this.$ga.event({
         eventCategory: "click",
@@ -173,16 +191,16 @@ export default {
         eventAction: "getForecast",
         eventLabel: this.stream.station_name
       });
-    //  if (!this.stream.forecast.list) {
-        weatherApi
-          .getForecast(
-            this.stream.location.latitude,
-            this.stream.location.longitude
-          )
-          .then(response => {
-            this.stream.forecast = response;
-          })
-          .catch(error => (this.error = error));
+      //  if (!this.stream.forecast.list) {
+      weatherApi
+        .getForecast(
+          this.stream.location.latitude,
+          this.stream.location.longitude
+        )
+        .then(response => {
+          this.stream.forecast = response;
+        })
+        .catch(error => (this.error = error));
       //}
     },
     getWeather() {
@@ -193,7 +211,7 @@ export default {
         eventLabel: this.stream.station_name
       });
       // console.log(stream, 'get weather');
-     
+
       weatherApi
         .getWeather(
           this.stream.location.latitude,

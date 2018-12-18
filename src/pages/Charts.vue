@@ -45,6 +45,14 @@ import _ from "lodash";
 //https://github.com/devstark-com/vue-google-charts?ref=madewithvuejs.com
 export default {
   name: 'charts',
+  methods: {
+    track() {
+      this.$ga.page("/charts");
+      this.$ga.screenview({
+        screenName: "charts"
+      });
+    }
+  },
   data() {
     return {
       processedData: {},
@@ -93,6 +101,7 @@ export default {
     }
   },
   mounted() {
+    this.track();
     let wordtreeData = [
       ['Phrases'],
 

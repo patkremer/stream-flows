@@ -42,11 +42,14 @@ export default {
   },
   methods: {
     track() {
-      this.$ga.page("/");
+      this.$ga.page("/about");
       this.$ga.screenview({
-        screenName: "home"
+        screenName: "about"
       });
     }
+  },
+  mounted() {
+    this.track();
   }
 };
 </script>

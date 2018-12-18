@@ -274,12 +274,7 @@ export default {
         });
       }
     },
-    track() {
-      this.$ga.page("/");
-      this.$ga.screenview({
-        screenName: "home"
-      });
-    },
+   
     nextPage() {
       this.pageNumber++;
     },

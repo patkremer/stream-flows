@@ -143,7 +143,7 @@ export default {
         search: "",
         showFavorites: false,
         regionId: " ",
-        showFilterOptions: false
+        showFilterOptions: true
       }
     };
   },

@@ -32,6 +32,7 @@ npm run build
 co-flows.surge.sh
 Deploy with surge [see link](https://cli.vuejs.org/guide/deployment.html#surge).
 
+surge dist coloradoflows.com
 
 ### Run your tests
 ```

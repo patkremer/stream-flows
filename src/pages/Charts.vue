@@ -3,13 +3,13 @@
   
     <div class="row white">
       <div class="col s12">
-         <GChart class="large-chart"
+         <!-- <GChart class="large-chart"
             type="ScatterChart"
             :data="chartData"
             :options="chartOptions"
             :settings="{ packages: ['scatter']}"
             :createChart="(el, google) => new google.charts.Scatter(el)"
-          />
+          /> -->
       </div>
       <!-- <div class="col s12">
          <GChart class="large-chart"
@@ -21,13 +21,13 @@
           />
       </div> -->
       <div class="col s12">
-         <GChart class="large-chart"
+         <!-- <GChart class="large-chart"
             type="BarChart"
             :data="totalDrainageCfsChartData"
             :options="totalDrainageCfsChartOptions"
             :settings="{ packages: ['bar']}"
              :createChart="(el, google) => new google.charts.Bar(el)"
-          />
+          /> -->
       </div>
     </div>  
   </main-layout>
@@ -38,11 +38,9 @@
 import Vue from 'vue';
 import MainLayout from "../layouts/Main.vue";
 import waterApi from '../data/waterApi';
-import { GChart } from 'vue-google-charts';
 import _ from "lodash";
 //pie chart
-//https://developers.google.com/chart/interactive/docs/gallery/scatterchart
-//https://github.com/devstark-com/vue-google-charts?ref=madewithvuejs.com
+//https://github.com/apertureless/vue-chartjs
 export default {
   name: 'charts',
   methods: {
@@ -155,7 +153,6 @@ export default {
   },
   components: {
     MainLayout,
-    GChart
   }
 }
 </script>

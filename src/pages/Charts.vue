@@ -9,9 +9,9 @@
             :options="chartOptions"
             :settings="{ packages: ['scatter']}"
             :createChart="(el, google) => new google.charts.Scatter(el)"
-          /> -->
+          />
       </div>
-      <!-- <div class="col s12">
+     <div class="col s12">
          <GChart class="large-chart"
             type="BarChart"
             :data="byDivisionChartData"
@@ -20,15 +20,15 @@
             :createChart="(el, google) => new google.charts.Bar(el)"
           />
       </div> -->
-      <div class="col s12">
-         <!-- <GChart class="large-chart"
+      <!-- <div class="col s12">
+         <GChart class="large-chart"
             type="BarChart"
             :data="totalDrainageCfsChartData"
             :options="totalDrainageCfsChartOptions"
             :settings="{ packages: ['bar']}"
              :createChart="(el, google) => new google.charts.Bar(el)"
           /> -->
-      </div>
+      </div> 
     </div>  
   </main-layout>
   
@@ -40,7 +40,6 @@ import MainLayout from "../layouts/Main.vue";
 import waterApi from '../data/waterApi';
 import _ from "lodash";
 //pie chart
-//https://github.com/apertureless/vue-chartjs
 export default {
   name: 'charts',
   methods: {

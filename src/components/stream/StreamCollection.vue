@@ -1,31 +1,28 @@
 <template>
   <div class="streamCollection">
-    <div class="row remove-bottom-margin">
-      <div class="col s12 m12">
-           <app-icon class="left"></app-icon><h3> Stream Flows</h3>
-      </div>
-
+    <div class="row remove-bottom-margin white">
       <div class="col s12 input-field">
         <i class="material-icons prefix">search</i>
         <input
           v-model="searchSettings.search"
           id="stream_search"
           v-on:change="searchChanged($event)"
-          class
           type="text"
           placeholder="Search"
         >
         <label for="stream_search">Search Streams by name</label>
         <span class="helper-text">
-         
           <span
-            v-if="(searchSettings.showFavorites || searchSettings.regionId != ' ') && !searchSettings.showFilterOptions"
+            v-if="(searchSettings.showFavorites || searchSettings.regionId != ' ' || searchSettings.hideStreamsWithZeroCfs || searchSettings.hideStreamsWithoutRecentUpdate) && !searchSettings.showFilterOptions"
           >Filters Active</span>
+          
           <button
             class="btn-flat btn-small waves-effect waves-light right"
-            v-bind:class="{teal: (searchSettings.showFavorites || searchSettings.regionId != ' ')}"
+            v-bind:class="{teal: (searchSettings.showFavorites || searchSettings.regionId != ' ' || searchSettings.hideStreamsWithZeroCfs || searchSettings.hideStreamsWithoutRecentUpdate)}"
             v-on:click="searchSettings.showFilterOptions = !searchSettings.showFilterOptions;"
           >
+            <span v-if="searchSettings.showFilterOptions">Hide</span>
+            <span v-else>Show</span>
             Filter Settings
             <i
               v-show="!searchSettings.showFilterOptions"
@@ -35,17 +32,43 @@
           </button>
         </span>
       </div>
-    
+
       <div class="row" v-show="searchSettings.showFilterOptions">
-        <div class="row">
-          <div class="col s12 m12">
+        <div class="col s12 m12">
+          <div class="switch">
+            <label>
+              Card View
+              <input
+                type="checkbox"
+                checked="checked"
+                v-model="searchSettings.showMapView"
+              >
+              <span class="lever"></span>
+              Map View
+            </label>
+          </div>
+          <p>
             <label>
               <input type="checkbox" checked="checked" v-model="searchSettings.showFavorites">
               <span>Show Favorites (click or tap stars to favorite!)</span>
+            </label>&nbsp;
+            <label>
+              <input
+                type="checkbox"
+                checked="checked"
+                v-model="searchSettings.hideStreamsWithZeroCfs"
+              >
+              <span>Hide Streams with 0 Cfs</span>
+            </label>&nbsp;
+            <label>
+              <input
+                type="checkbox"
+                checked="checked"
+                v-model="searchSettings.hideStreamsWithoutRecentUpdate"
+              >
+              <span>Hide Streams that haven't been updated recently</span>
             </label>
-          </div>
-        </div>
-        <div class="col s12 m12">
+          </p>
           <label>Filter By Drainage</label>
           <select class="browser-default" v-model="searchSettings.regionId">
             <option value=" " selected>None</option>
@@ -60,65 +83,70 @@
         </div>
       </div>
     </div>
-
-    <div class="row" id="streamCollections">
-      <transition name="fade">
-        <stream-card-collection v-bind:streams.sync="pagedData"></stream-card-collection>
-        <!-- <stream-table-collection v-else :streams="pagedData"></stream-table-collection> -->
-      </transition>
+    <div v-if="searchSettings.showMapView">
+      <stream-map v-bind:streams.sync="searchData"></stream-map>
     </div>
 
-    <div class="row" v-if="streams.length > 0">
-      <div class="col s3 m3 l2 xl2">
-        <button
-          v-scroll-to="'#stream_search'"
-          class="btn-floating teal darken-2 waves-effect waves-light"
-          type="button"
-          v-bind:disabled="pageNumber==1"
-          v-on:click="prevPage"
-        >
-          <i class="material-icons right">keyboard_arrow_left</i>
-        </button>
-        <button
-          v-scroll-to="'#stream_search'"
-          class="btn-floating teal darken-2 waves-effect waves-light"
-          type="button"
-          v-bind:disabled="pageNumber >= pageCount"
-          v-on:click="nextPage"
-        >
-          <i class="material-icons right">keyboard_arrow_right</i>
-        </button>
+    <div v-else id="collectionView">
+      <div class="row" id="streamCollections">
+        <transition name="fade">
+          <stream-card-collection v-bind:streams.sync="pagedData"></stream-card-collection>
+          <!-- <stream-table-collection v-else :streams="pagedData"></stream-table-collection> -->
+        </transition>
       </div>
-      <div class="input-field active col s2 m2 l1 xl1">
-        <input
-          v-model.number="size"
-          id="page_size"
-          class="validate"
-          required
-          min="1"
-          max="500"
-          type="number"
-        >
-        <label for="page_size">Page size</label>
+
+      <div class="row" v-if="streams.length > 0">
+        <div class="col s3 m3 l2 xl2">
+          <button
+            v-scroll-to="'#stream_search'"
+            class="btn-floating teal darken-2 waves-effect waves-light"
+            type="button"
+            v-bind:disabled="pageNumber==1"
+            v-on:click="prevPage"
+          >
+            <i class="material-icons right">keyboard_arrow_left</i>
+          </button>
+          <button
+            v-scroll-to="'#stream_search'"
+            class="btn-floating teal darken-2 waves-effect waves-light"
+            type="button"
+            v-bind:disabled="pageNumber >= pageCount"
+            v-on:click="nextPage"
+          >
+            <i class="material-icons right">keyboard_arrow_right</i>
+          </button>
+        </div>
+        <div class="input-field active col s2 m2 l1 xl1">
+          <input
+            v-model.number="size"
+            id="page_size"
+            class="validate"
+            required
+            min="1"
+            max="500"
+            type="number"
+          >
+          <label for="page_size">Page size</label>
+        </div>
+        <div class="input-field active col s3 m3 l3 xl3">
+          <input
+            v-model.number="pageNumber"
+            id="pageNumber"
+            class="validate"
+            required
+            min="1"
+            v-bind:max="pageCount"
+            type="number"
+          >
+          <label for="pageNumber">Page Number</label>
+          <span class="helper-text">Out of {{pageCount}}</span>
+        </div>
       </div>
-      <div class="input-field active col s3 m3 l3 xl3">
-        <input
-          v-model.number="pageNumber"
-          id="pageNumber"
-          class="validate"
-          required
-          min="1"
-          v-bind:max="pageCount"
-          type="number"
-        >
-        <label for="pageNumber">Page Number</label>
-        <span class="helper-text">Out of {{pageCount}}</span>
-      </div>
-    </div>
-    <div class="col s12" v-else>
-      <h3>Loading... Please wait</h3>
-      <div class="progress">
-        <div class="indeterminate"></div>
+      <div class="col s12" v-else>
+        <h3>Loading... Please wait</h3>
+        <div class="progress">
+          <div class="indeterminate"></div>
+        </div>
       </div>
     </div>
   </div>
@@ -130,8 +158,7 @@ import apiTokens from "../../apiTokens.js";
 import _ from "lodash";
 // import StreamTableCollection from "./StreamTableCollection.vue";
 import StreamCardCollection from "./StreamCardCollection.vue";
-import AppIcon from '../ui/AppIcon.vue';
-
+import StreamMap from "./StreamMap.vue";
 export default {
   name: "StreamCollection",
   data() {
@@ -142,9 +169,13 @@ export default {
       error: null,
       searchSettings: {
         search: "",
+        showMapView: false,
         showFavorites: false,
         regionId: " ",
-        showFilterOptions: true
+        showFilterOptions: true,
+        hideStreamsWithZeroCfs: false,
+        hideStreamsWithoutUpdateInPast30Days: false,
+        hideStreamsWithoutRecentUpdate: false
       }
     };
   },
@@ -152,7 +183,7 @@ export default {
   components: {
     // StreamTableCollection,
     StreamCardCollection,
-    AppIcon
+    StreamMap
   },
 
   mounted() {
@@ -160,7 +191,6 @@ export default {
     this.searchSettings = JSON.parse(
       this.$ls.get("searchSettings", JSON.stringify(this.searchSettings))
     );
-  
   },
 
   updated() {
@@ -185,18 +215,26 @@ export default {
       let returnData = [];
       if (this.searchSettings.search) {
         returnData = this.streams.filter(function(s) {
-          var include = !(today.diff(self.$moment(s.date_time), "days") > 30);
-          if (self.searchSettings.showFavorites) {
+          var include = true;
+
+          if (self.searchSettings.hideStreamsWithoutRecentUpdate) {
+            include = !(today.diff(self.$moment(s.date_time), "days") > 30);
+          }
+          if (self.searchSettings.showFavorites && include) {
             include = s.isFavorite;
           }
           var hasDiv = true;
-          if (self.searchSettings.regionId != " ") {
+          if (self.searchSettings.regionId != " " && include) {
             hasDiv = s.div == self.searchSettings.regionId;
+          }
+           if (self.searchSettings.showMapView && include) {
+            include = s.location && s.location.latitude && s.location.longitude;
           }
           if (s.station_name) {
             if (!s.county) {
               s.county = "";
             }
+
             //|| s.county.toLowerCase().indexOf(self.search.toLowerCase()) != -1
             return (
               include &&
@@ -209,14 +247,24 @@ export default {
         });
       } else {
         returnData = this.streams.filter(function(s) {
-          var include = !(today.diff(self.$moment(s.date_time), "days") > 30);
+          var include = true;
+          if (self.searchSettings.hideStreamsWithoutRecentUpdate) {
+            include = !(today.diff(self.$moment(s.date_time), "days") > 30);
+          }
 
-          if (self.searchSettings.showFavorites) {
+          if (self.searchSettings.showFavorites && include) {
             include = s.isFavorite;
           }
 
-          if (self.searchSettings.regionId != " ") {
+          if (self.searchSettings.regionId != " " && include) {
             return include && s.div == self.searchSettings.regionId;
+          }
+          if (self.searchSettings.hideStreamsWithZeroCfs && include) {
+            include = s.flowAmount && s.flowAmount > 0;
+          }
+
+          if (self.searchSettings.showMapView && include) {
+            include = s.location && s.location.latitude && s.location.longitude;
           }
           return include;
         });
@@ -276,7 +324,7 @@ export default {
         });
       }
     },
-   
+
     nextPage() {
       this.pageNumber++;
     },

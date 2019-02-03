@@ -1,5 +1,5 @@
 <template>
-  <div class="card small grey lighten-5 stream-card">
+  <div class="card small  stream-card">
     <div class="card-content">
       <span class="card-title">
         <a
@@ -35,7 +35,7 @@
             class="btn-large btn-flat weather-button activator"
             v-on:click.once="getForecastClick(stream)"
           >
-            <i class="material-icons left">filter_drama</i>Show 5 Day Weather Forecast
+            <i class="material-icons left">filter_drama</i>Show 5 Day Forecast
           </a>
         </div>
         <div>
@@ -57,12 +57,12 @@
       </span>
       <weather-forecast v-bind:forecast.sync="forecast"></weather-forecast>
      
-      <b v-if="stream.weather.main">
+      <!-- <b v-if="stream.weather.main">
         <i class="material-icons left">wb_cloudy</i>
         {{stream.weather.main.temp}}&deg; F, {{stream.weather.weather[0].description}}, {{stream.weather.wind.speed}} mph winds
         <br>
         High: {{stream.weather.main.temp_max}}&deg; F, Low: {{stream.weather.main.temp_min}}&deg; F
-      </b>
+      </b> -->
     </div>
     <div class="card-action center">
     
@@ -230,7 +230,9 @@ export default {
 .weather-button {
   padding: 0;
   line-height: 30px;
-  height: 28px;
+  /* height: 28px; */
+  display:inline;
+  color: #343434 !important;
 }
 .card.stream-card {
   height: 350px;
@@ -244,5 +246,8 @@ export default {
   display: block;
   width: 100%;
   /* line-break: normal; */
+}
+.card .card-title {
+    font-size: 20px;
 }
 </style>

@@ -217,7 +217,10 @@ export default {
         returnData = this.streams.filter(function(s) {
           var include = true;
 
-       
+          if (self.searchSettings.showMapView && include) {
+            include = s.location && s.location.latitude && s.location.longitude;
+          }
+
           if (self.searchSettings.showFavorites && include) {
             include = s.isFavorite;
           }
@@ -225,9 +228,7 @@ export default {
           if (self.searchSettings.regionId != " " && include) {
             hasDiv = s.div == self.searchSettings.regionId;
           }
-           if (self.searchSettings.showMapView && include) {
-            include = s.location && s.location.latitude && s.location.longitude;
-          }
+           
 
           if (self.searchSettings.hideStreamsWithoutRecentUpdate && include) {
             include = !(today.diff(self.$moment(s.date_time), "days") > 30);
@@ -252,22 +253,24 @@ export default {
         returnData = this.streams.filter(function(s) {
           var include = true;
        
+          if (self.searchSettings.showMapView && include) {
+            include = s.location && s.location.latitude && s.location.longitude;
+          }
 
           if (self.searchSettings.showFavorites && include) {
             include = s.isFavorite;
           }
-
+          
           if (self.searchSettings.regionId != " " && include) {
             return include && s.div == self.searchSettings.regionId;
           }
+
           if (self.searchSettings.hideStreamsWithZeroCfs && include) {
             include = s.flowAmount && s.flowAmount > 0;
           }
 
-          if (self.searchSettings.showMapView && include) {
-            include = s.location && s.location.latitude && s.location.longitude;
-          }
           
+
           if (self.searchSettings.hideStreamsWithoutRecentUpdate && include) {
             include = !(today.diff(self.$moment(s.date_time), "days") > 30);
           }

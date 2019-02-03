@@ -2,7 +2,7 @@
  
 <div class="stream-card-collection" >
   <div class="col s12 md6 lg3 xl4" v-for="(stream) in streams" :key="stream.id">
-     <stream-card v-bind:stream.sync="stream" ></stream-card>
+     <stream-card v-bind:stream.sync="stream" class="grey lighten-5"></stream-card>
   </div>
 </div>
 

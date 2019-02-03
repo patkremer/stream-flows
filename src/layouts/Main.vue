@@ -12,7 +12,7 @@
     <footer class="page-footer grey lighten-3">
           <div class="footer-copyright">
             <div class="container black-text center">
-              Colorado Flows - Created By Patrick Kremer, 2018
+              <app-icon class="" width="20" height="20" style="vertical-align: sub;"></app-icon> Colorado Flows - Created By Patrick Kremer, 2018
               <!-- <a class="grey-text text-lighten-4 right" href="#!">More Links</a> -->
             </div>
           </div>
@@ -23,9 +23,11 @@
 
 <script>
   import MainMenu from '../components/ui/MainMenu.vue';
+  import AppIcon from '../components/ui/AppIcon.vue';
   export default {
     components: {
-      MainMenu
+      MainMenu,
+      AppIcon
     },
    
     mounted: function () {
@@ -56,7 +58,7 @@
   -moz-osx-font-smoothing: grayscale;
   /* text-align: center; */
   color: #222;
-  background-color: #fafafa;
+  /* background-color: #fafafa; */
   /* padding-left: 20px;
   padding-right: 20px; */
 }

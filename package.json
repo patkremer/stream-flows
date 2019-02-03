@@ -1,6 +1,6 @@
 {
   "name": "stream-flows",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve",
@@ -9,12 +9,15 @@
   },
   "dependencies": {
     "axios": "^0.18.0",
+    "chart.js": "^2.7.3",
     "vue": "^2.5.17",
     "vue-analytics": "^5.16.1",
-    "vue-google-charts": "^0.3.2",
+    "vue-chartjs": "^3.4.0",
     "vue-localstorage": "^0.6.2",
     "vue-moment": "^4.0.0",
-    "vue-scrollto": "^2.13.0"
+    "vue-scrollto": "^2.13.0",
+    "vue2-leaflet": "^1.2.3",
+    "vue2-leaflet-markercluster": "^2.1.2"
   },
   "devDependencies": {
     "@types/lodash": "^4.14.119",

@@ -5,9 +5,20 @@ import VueLocalStorage from 'vue-localstorage'
 import moment from 'vue-moment'
 import VueAnalytics from 'vue-analytics';
 import VueScrollTo from 'vue-scrollto';
-import VueGoogleCharts from 'vue-google-charts';
+import { L } from 'vue2-leaflet'
+import 'leaflet/dist/leaflet.css'
 
-Vue.use(VueGoogleCharts);
+
+// this part resolve an issue where the markers would not appear
+delete L.Icon.Default.prototype._getIconUrl;
+
+L.Icon.Default.mergeOptions({
+  iconRetinaUrl: require('leaflet/dist/images/marker-icon-2x.png'),
+  iconUrl: require('leaflet/dist/images/marker-icon.png'),
+  shadowUrl: require('leaflet/dist/images/marker-shadow.png')
+});
+
+
 Vue.use(VueScrollTo);
 Vue.use(VueAnalytics, {
   id: 'UA-125445562-2',

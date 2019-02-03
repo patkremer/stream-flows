@@ -14,9 +14,9 @@
       <nav-link href="/">
         <i class="material-icons left">home</i> Home
       </nav-link>
-      <nav-link href="/charts">
-        <i class="material-icons left">bar_chart</i>Charts
-      </nav-link>
+      <!-- <nav-link href="/maps">
+        <i class="material-icons left">map</i>Maps
+      </nav-link> -->
 
       <nav-link href="/about">
         <i class="material-icons left">info</i>About
@@ -29,6 +29,9 @@
     >
       <i class="material-icons">menu</i>
     </a>
+    <app-icon class="right" width="25" height="25" style="
+    margin-right: 10px;
+    margin-top: 5px;"></app-icon>
   </div>
 </template>
 

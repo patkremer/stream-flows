@@ -217,9 +217,7 @@ export default {
         returnData = this.streams.filter(function(s) {
           var include = true;
 
-          if (self.searchSettings.hideStreamsWithoutRecentUpdate) {
-            include = !(today.diff(self.$moment(s.date_time), "days") > 30);
-          }
+       
           if (self.searchSettings.showFavorites && include) {
             include = s.isFavorite;
           }
@@ -230,6 +228,11 @@ export default {
            if (self.searchSettings.showMapView && include) {
             include = s.location && s.location.latitude && s.location.longitude;
           }
+
+          if (self.searchSettings.hideStreamsWithoutRecentUpdate && include) {
+            include = !(today.diff(self.$moment(s.date_time), "days") > 30);
+          }
+
           if (s.station_name) {
             if (!s.county) {
               s.county = "";
@@ -248,9 +251,7 @@ export default {
       } else {
         returnData = this.streams.filter(function(s) {
           var include = true;
-          if (self.searchSettings.hideStreamsWithoutRecentUpdate) {
-            include = !(today.diff(self.$moment(s.date_time), "days") > 30);
-          }
+       
 
           if (self.searchSettings.showFavorites && include) {
             include = s.isFavorite;
@@ -265,6 +266,10 @@ export default {
 
           if (self.searchSettings.showMapView && include) {
             include = s.location && s.location.latitude && s.location.longitude;
+          }
+          
+          if (self.searchSettings.hideStreamsWithoutRecentUpdate && include) {
+            include = !(today.diff(self.$moment(s.date_time), "days") > 30);
           }
           return include;
         });

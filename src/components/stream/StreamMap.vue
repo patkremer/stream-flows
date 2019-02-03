@@ -1,7 +1,7 @@
 <template>
   <div class="">
     <div class="col s12 md12 lg12 xl12">
-      <div class="map-container" ref="mapBox">
+      <div class="map-container">
           <l-map
             :zoom="mapSettings.zoom"
             :center="mapSettings.center"
@@ -17,7 +17,6 @@
               
               :lat-lng="{'lat': stream.location.latitude, 'lng': stream.location.longitude}"
             >
-              <l-tooltip>{{stream.station_name}}</l-tooltip>
               <l-popup>
                 <!-- {{stream.station_name}}
                 <br>
@@ -40,14 +39,13 @@
 
 <script>
 import StreamCard from "./StreamCard.vue";
-import { L, LMap, LTileLayer, LMarker, LPopup, LTooltip } from "vue2-leaflet";
+import { L, LMap, LTileLayer, LMarker, LPopup } from "vue2-leaflet";
 import Vue2LeafletMarkerCluster from "vue2-leaflet-markercluster";
 // import _ from "lodash";
 export default {
   name: "stream-map",
   data() {
     return {
-      height: 500,
       error: null,
       clusterOptions: {},
       mapSettings: {
@@ -76,7 +74,6 @@ export default {
     LTileLayer,
     LMarker,
     LPopup,
-    LTooltip,
     "v-marker-cluster": Vue2LeafletMarkerCluster
   },
 
@@ -85,9 +82,7 @@ export default {
   },
 
   methods: {
-    matchHeight () {
-      this.height = this.$refs.mapBox.clientHeight;
-    },
+    
     zoomUpdate(zoom) {
       this.mapSettings.currentZoom = zoom;
     },
@@ -112,14 +107,10 @@ export default {
 }
 @media (min-height: 200px) {
   .map-container {
-    height: 175px;
+    height: 500px;
   }
 }
-@media (min-height: 400px) {
-  .map-container {
-    height: 300px;
-  }
-}
+
 @media (min-height: 650px) {
   .map-container {
     height: 500px;

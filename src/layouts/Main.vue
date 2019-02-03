@@ -12,7 +12,7 @@
     <footer class="page-footer grey lighten-3">
           <div class="footer-copyright">
             <div class="container black-text center">
-              <app-icon class="" width="20" height="20" style="vertical-align: sub;"></app-icon> Colorado Flows - Created By Patrick Kremer, 2018
+              <app-icon class="left" width="25" height="25" style="vertical-align: sub;"></app-icon> © 2019 Colorado Flows 
               <!-- <a class="grey-text text-lighten-4 right" href="#!">More Links</a> -->
             </div>
           </div>

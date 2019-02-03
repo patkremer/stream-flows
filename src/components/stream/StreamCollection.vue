@@ -6,19 +6,19 @@
         <input
           v-model="searchSettings.search"
           id="stream_search"
-          v-on:change="searchChanged($event)"
+          v-on:input="searchChanged($event)"
           type="text"
           placeholder="Search"
         >
         <label for="stream_search">Search Streams by name</label>
         <span class="helper-text">
           <span
-            v-if="(searchSettings.showFavorites || searchSettings.regionId != ' ' || searchSettings.hideStreamsWithZeroCfs || searchSettings.hideStreamsWithoutRecentUpdate) && !searchSettings.showFilterOptions"
+            v-if="filtersActive"
           >Filters Active</span>
           
           <button
             class="btn-flat btn-small waves-effect waves-light right"
-            v-bind:class="{teal: (searchSettings.showFavorites || searchSettings.regionId != ' ' || searchSettings.hideStreamsWithZeroCfs || searchSettings.hideStreamsWithoutRecentUpdate)}"
+            v-bind:class="{teal: filtersActive}"
             v-on:click="searchSettings.showFilterOptions = !searchSettings.showFilterOptions;"
           >
             <span v-if="searchSettings.showFilterOptions">Hide</span>
@@ -97,24 +97,22 @@
 
       <div class="row" v-if="streams.length > 0">
         <div class="col s3 m3 l2 xl2">
-          <button
-            v-scroll-to="'#stream_search'"
+          <a
+            href="#stream_search"
             class="btn-floating teal darken-2 waves-effect waves-light"
-            type="button"
             v-bind:disabled="pageNumber==1"
             v-on:click="prevPage"
           >
             <i class="material-icons right">keyboard_arrow_left</i>
-          </button>
-          <button
-            v-scroll-to="'#stream_search'"
+          </a>
+          <a
+            href="#stream_search"
             class="btn-floating teal darken-2 waves-effect waves-light"
-            type="button"
             v-bind:disabled="pageNumber >= pageCount"
             v-on:click="nextPage"
           >
             <i class="material-icons right">keyboard_arrow_right</i>
-          </button>
+          </a>
         </div>
         <div class="input-field active col s2 m2 l1 xl1">
           <input
@@ -206,6 +204,9 @@ export default {
   },
 
   computed: {
+    filtersActive() {
+      return (this.searchSettings.showFavorites || this.searchSettings.regionId != ' ' || this.searchSettings.hideStreamsWithZeroCfs || this.searchSettings.hideStreamsWithoutRecentUpdate) && !this.searchSettings.showFilterOptions;
+    },
     searchData() {
       if (this.searchSettings.search.length > 1) {
         //  this.pageNumber = 1;
@@ -213,7 +214,6 @@ export default {
       var self = this;
       let today = this.$moment();
       let returnData = [];
-      if (this.searchSettings.search) {
         returnData = this.streams.filter(function(s) {
           var include = true;
 
@@ -227,56 +227,36 @@ export default {
           var hasDiv = true;
           if (self.searchSettings.regionId != " " && include) {
             hasDiv = s.div == self.searchSettings.regionId;
+            include = s.div == self.searchSettings.regionId;
           }
            
-
-          if (self.searchSettings.hideStreamsWithoutRecentUpdate && include) {
-            include = !(today.diff(self.$moment(s.date_time), "days") > 30);
-          }
-
-          if (s.station_name) {
-            if (!s.county) {
-              s.county = "";
-            }
-
-            //|| s.county.toLowerCase().indexOf(self.search.toLowerCase()) != -1
-            return (
-              include &&
-              (s.station_name
-                .toLowerCase()
-                .indexOf(self.searchSettings.search.toLowerCase()) != -1 &&
-                hasDiv)
-            );
-          }
-        });
-      } else {
-        returnData = this.streams.filter(function(s) {
-          var include = true;
-       
-          if (self.searchSettings.showMapView && include) {
-            include = s.location && s.location.latitude && s.location.longitude;
-          }
-
-          if (self.searchSettings.showFavorites && include) {
-            include = s.isFavorite;
-          }
-          
-          if (self.searchSettings.regionId != " " && include) {
-            return include && s.div == self.searchSettings.regionId;
-          }
-
           if (self.searchSettings.hideStreamsWithZeroCfs && include) {
             include = s.flowAmount && s.flowAmount > 0;
           }
 
-          
-
           if (self.searchSettings.hideStreamsWithoutRecentUpdate && include) {
             include = !(today.diff(self.$moment(s.date_time), "days") > 30);
           }
-          return include;
+          if (self.searchSettings.search) {
+            if (s.station_name) {
+              if (!s.county) {
+                s.county = "";
+              }
+
+              //|| s.county.toLowerCase().indexOf(self.search.toLowerCase()) != -1
+              return (
+                include &&
+                (s.station_name
+                  .toLowerCase()
+                  .indexOf(self.searchSettings.search.toLowerCase()) != -1 &&
+                  hasDiv)
+              );
+            }
+          } else {
+            return include;
+          }
         });
-      }
+    
       if (this.searchSettings.search) {
         return _.orderBy(
           returnData,
@@ -331,6 +311,7 @@ export default {
           eventLabel: this.searchSettings.search
         });
       }
+      this.pageNumber = 1;
     },
 
     nextPage() {

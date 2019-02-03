@@ -4,7 +4,6 @@ import NotFound from './pages/404.vue';
 import VueLocalStorage from 'vue-localstorage'
 import moment from 'vue-moment'
 import VueAnalytics from 'vue-analytics';
-import VueScrollTo from 'vue-scrollto';
 import { L } from 'vue2-leaflet'
 import 'leaflet/dist/leaflet.css'
 
@@ -19,7 +18,6 @@ L.Icon.Default.mergeOptions({
 });
 
 
-Vue.use(VueScrollTo);
 Vue.use(VueAnalytics, {
   id: 'UA-125445562-2',
     // batch: {

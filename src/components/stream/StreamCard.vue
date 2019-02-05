@@ -79,7 +79,7 @@
         class="btn-small btn-flat waves-effect waves-light teal-text text-darken-2"
       >
         <i class="material-icons left">show_chart</i>
-        History Chart
+        Chart
       </a>
     </div>
   </div>

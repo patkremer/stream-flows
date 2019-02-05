@@ -2,16 +2,16 @@
   <!-- <modal name="stream-chart-modal" :min-width="400" :width="'600'" :min-height="500" :height="'500'" @before-open="beforeOpen" -->
          <!-- @before-close="beforeClose"> -->
          <div>
-            <div slot="top-right">
+            <!-- <div slot="top-right">
              <a class="waves-effect waves-light right black-text"  v-on:click="$modal.hide('stream-chart-modal')">
                <i class="material-icons " >close</i>
             </a>
-           </div>
+           </div> -->
 
            <div class="row">
              <div class="col">
              
-                <div style="position: relative; height:40vh; width:80vw" >
+                <div style="position: relative; min-height:350px; width:85vw" >
                   <stream-history-chart :chart-data="data" v-if="isLoaded" />
 
 
@@ -45,8 +45,6 @@ export default {
     }
   },
   mounted() {
-    console.log('modal mounted',this.chartjsData);
-    
     this.data = this.chartjsData;
     this.isLoaded = true;
    // this.chartData = this.data;
@@ -68,20 +66,7 @@ export default {
     //   });
       this.isLoaded = true;
   },
-  methods: {
-    beforeOpen (event) {
-      console.log(event);
-     
-
-      // Set the opening time of the modal
-    },
-    beforeClose (event) {
-      console.log(event);
-      this.flowData = null;
-      this.currentStream = null;
-      
-    }
-  }
+ 
 }
 </script>
 

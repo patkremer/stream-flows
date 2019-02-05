@@ -12,7 +12,7 @@ export default {
     }
   },
   mounted () {
-    this.renderChart(this.chartData, {responsive: true, maintainAspectRatio: true});
+    this.renderChart(this.chartData, {responsive: true, maintainAspectRatio: false});
   }
 }
 </script>

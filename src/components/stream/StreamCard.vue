@@ -46,7 +46,12 @@
           </span>
         </div>
         <div>
-          <small>Source: {{stream.data_source}}</small>
+        <small>   <a
+        v-if="stream.http_linkage"
+        v-on:click="viewSourceClick()"
+        v-bind:href="stream.http_linkage"
+        class="browser-default"
+        target="_blank">Source: {{stream.data_source}}</a><span v-else>Source: {{stream.data_source}}</span></small>
         </div>
       </div>
       <!--  -->
@@ -74,7 +79,7 @@
         class="btn-small btn-flat waves-effect waves-light teal-text text-darken-2"
       >
         <i class="material-icons left">show_chart</i>
-        Detail
+        View History Chart
       </a>
     </div>
   </div>
@@ -171,6 +176,14 @@ export default {
         eventLabel: this.stream.station_name
       });
     },
+    viewSourceClick() {
+      this.$ga.event({
+        eventCategory: "click",
+        eventAction: "viewSourceClick",
+        eventLabel: this.stream.station_name
+      });
+    },
+
     viewFlowHistory() {
       var flowHistory = [];
       var self = this;
@@ -182,16 +195,16 @@ export default {
             flowHistory.push(doc.data());
             // doc.data() is never undefined for query doc snapshots
           });
-          console.log(flowHistory, "flow histor");
 
           self.flowData = _.orderBy(flowHistory, {'date_time': 'desc'});
-
+          self.flowData = self.flowData.slice(1).slice(-45);
           self.chartData.labels = _.map(self.flowData, function (f) {
             var dt = new Date(f.date_time);
-            console.log(dt.toDateString(), f.date_time);
 
             return dt.toDateString();
           });
+
+
 
           self.chartData.datasets[0].label = "CFS at " + self.stream.station_name;
           self.chartData.datasets[0].data = _.map(self.flowData, function (f) {
@@ -208,7 +221,7 @@ export default {
           self.$modal.show(
             StreamHistoryModal,
             { chartjsData: self.chartData, currentStream: self.stream },
-            { height: 'auto', width: '90%'
+            { height: 'auto', width: '95%'
             },
             null,
             {
@@ -216,26 +229,10 @@ export default {
               resizable: true,
               adaptive: true,
               scrollable: true,
-              clickToClose: false
+             // clickToClose: false
             }
           );
 
-          // self.flowData = _.orderBy(flowHistory, {'date_time': 'desc'});
-
-          // self.chartData.labels = _.map(self.flowData, function (f) {
-          //   return f.date_time;
-          // });
-
-          // self.chartData.datasets[0].label = self.stream.station_name;
-          // self.chartData.datasets[0].data = _.map(self.flowData, function (f) {
-          //   f.flow = _.toNumber(f.flow);
-          //   if (_.isNumber(f.flow)) {
-          //     return f.flow;
-          //   } else {
-          //     console.log('flow is not a number', f.flow);
-          //   }
-          //   return 0;
-          // });
         })
         .catch(function(error) {
           console.log("Error getting documents: ", error);

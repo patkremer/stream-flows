@@ -197,7 +197,7 @@ export default {
           });
 
           self.flowData = _.orderBy(flowHistory, {'date_time': 'desc'});
-          self.flowData = self.flowData.slice(1).slice(-45);
+          self.flowData = self.flowData.slice(1).slice(-40);
           self.chartData.labels = _.map(self.flowData, function (f) {
             var dt = new Date(f.date_time);
 

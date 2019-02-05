@@ -10,7 +10,8 @@
 
            <div class="row">
              <div class="col">
-             
+              <p class="truncate">{{currentStream.station_name}}</p>
+               
                 <div style="position: relative; min-height:350px; width:85vw" >
                   <stream-history-chart :chart-data="data" v-if="isLoaded" />
 

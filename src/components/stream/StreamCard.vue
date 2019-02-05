@@ -79,7 +79,7 @@
         class="btn-small btn-flat waves-effect waves-light teal-text text-darken-2"
       >
         <i class="material-icons left">show_chart</i>
-        View History Chart
+        History Chart
       </a>
     </div>
   </div>
@@ -206,7 +206,7 @@ export default {
 
 
 
-          self.chartData.datasets[0].label = "CFS at " + self.stream.station_name;
+          self.chartData.datasets[0].label = "Cfs";
           self.chartData.datasets[0].data = _.map(self.flowData, function (f) {
              f.amount = _.toNumber(f.amount);
             if (_.isNumber(f.amount)) {

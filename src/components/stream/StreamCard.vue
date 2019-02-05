@@ -1,17 +1,18 @@
 <template>
-  <div class="card small  stream-card">
+  <div class="card small stream-card">
     <div class="card-content">
       <span class="card-title">
         <a
-        class="waves-effect waves-light"
-        v-bind:class="{ 'teal-text': !stream.isFavorite, 'text-darken-2': !stream.isFavorite}"
-        v-on:click="saveToFavorites()"
-      >
-        <i
-          v-bind:class="{'amber-text': stream.isFavorite, 'text-accent-4': stream.isFavorite}"
-          class="material-icons small"
-        >star</i>
-      </a> {{stream.station_name}}
+          class="waves-effect waves-light"
+          v-bind:class="{ 'teal-text': !stream.isFavorite, 'text-darken-2': !stream.isFavorite}"
+          v-on:click="saveToFavorites()"
+        >
+          <i
+            v-bind:class="{'amber-text': stream.isFavorite, 'text-accent-4': stream.isFavorite}"
+            class="material-icons small"
+          >star</i>
+        </a>
+        {{stream.station_name}}
         <!-- <small class="truncate">{{stream.stationId}}</small> -->
       </span>
       <div class="card-info">
@@ -25,7 +26,7 @@
         </div>
         <div v-if="hasLatAndLong">
           <weather v-if="stream.weather.main" v-bind:weather="stream.weather"></weather>
-         
+
           <a class="btn-flat btn-large weather-button" v-else v-on:click.once="getWeather(stream)">
             <i class="material-icons left">wb_cloudy</i>Show Current Weather
           </a>
@@ -56,16 +57,8 @@
         <i class="material-icons right">close</i>
       </span>
       <weather-forecast v-bind:forecast.sync="forecast"></weather-forecast>
-     
-      <!-- <b v-if="stream.weather.main">
-        <i class="material-icons left">wb_cloudy</i>
-        {{stream.weather.main.temp}}&deg; F, {{stream.weather.weather[0].description}}, {{stream.weather.wind.speed}} mph winds
-        <br>
-        High: {{stream.weather.main.temp_max}}&deg; F, Low: {{stream.weather.main.temp_min}}&deg; F
-      </b> -->
     </div>
     <div class="card-action center">
-    
       <a
         class="btn-small btn-flat waves-effect waves-light teal-text text-darken-2"
         v-on:click="getMapClick()"
@@ -77,10 +70,7 @@
       </a>
       
       <a
-        v-if="stream.http_linkage"
-        v-on:click="viewSourceClick()"
-        v-bind:href="stream.http_linkage"
-        target="_blank"
+        v-on:click="viewFlowHistory()"
         class="btn-small btn-flat waves-effect waves-light teal-text text-darken-2"
       >
         <i class="material-icons left">show_chart</i>
@@ -95,18 +85,37 @@ import WeatherForecast from "../weather/WeatherForecast.vue";
 import Weather from "../weather/Weather.vue";
 import weatherApi from "../../data/weatherApi.js";
 import _ from "lodash";
+const fb = require("../../data/firebaseConfig.js");
+import StreamHistoryModal from "./StreamHistoryModal.vue";
 
 export default {
   name: "stream-card",
   data: function() {
     return {
-      error: null
+      error: null,
+      flowData: [],
+      chartData: {
+        labels: [],
+        datasets: [
+          {
+            label: "My First dataset",
+             borderColor: '#249EBF',
+           // pointBackgroundColor: 'white',
+            //borderWidth: 1,
+            pointBorderColor: '#249EBF',
+            backgroundColor: 'transparent',
+            fill: false,
+            data: []
+          }
+        ]
+      }
     };
   },
 
   components: {
     WeatherForecast,
-    Weather
+    Weather,
+    StreamHistoryModal
   },
 
   props: {
@@ -162,10 +171,79 @@ export default {
         eventLabel: this.stream.station_name
       });
     },
-    viewSourceClick() {
+    viewFlowHistory() {
+      var flowHistory = [];
+      var self = this;
+      fb.flowsCollection
+        .where("stationId", "==", this.stream.stationId)
+        .get()
+        .then(function(querySnapshot) {
+          querySnapshot.forEach(function(doc) {
+            flowHistory.push(doc.data());
+            // doc.data() is never undefined for query doc snapshots
+          });
+          console.log(flowHistory, "flow histor");
+
+          self.flowData = _.orderBy(flowHistory, {'date_time': 'desc'});
+
+          self.chartData.labels = _.map(self.flowData, function (f) {
+            var dt = new Date(f.date_time);
+            console.log(dt.toDateString(), f.date_time);
+
+            return dt.toDateString();
+          });
+
+          self.chartData.datasets[0].label = "CFS at " + self.stream.station_name;
+          self.chartData.datasets[0].data = _.map(self.flowData, function (f) {
+             f.amount = _.toNumber(f.amount);
+            if (_.isNumber(f.amount)) {
+              return f.amount;
+            } else {
+              console.log('flow is not a number', f.amount);
+            }
+            return 0;
+          });
+
+
+          self.$modal.show(
+            StreamHistoryModal,
+            { chartjsData: self.chartData, currentStream: self.stream },
+            { height: 'auto', width: '90%'
+            },
+            null,
+            {
+              name: "stream-chart-modal",
+              resizable: true,
+              adaptive: true,
+              scrollable: true,
+              clickToClose: false
+            }
+          );
+
+          // self.flowData = _.orderBy(flowHistory, {'date_time': 'desc'});
+
+          // self.chartData.labels = _.map(self.flowData, function (f) {
+          //   return f.date_time;
+          // });
+
+          // self.chartData.datasets[0].label = self.stream.station_name;
+          // self.chartData.datasets[0].data = _.map(self.flowData, function (f) {
+          //   f.flow = _.toNumber(f.flow);
+          //   if (_.isNumber(f.flow)) {
+          //     return f.flow;
+          //   } else {
+          //     console.log('flow is not a number', f.flow);
+          //   }
+          //   return 0;
+          // });
+        })
+        .catch(function(error) {
+          console.log("Error getting documents: ", error);
+        });
+
       this.$ga.event({
         eventCategory: "click",
-        eventAction: "viewSourceClick",
+        eventAction: "viewFlowHistory",
         eventLabel: this.stream.station_name
       });
     },
@@ -231,7 +309,7 @@ export default {
   padding: 0;
   line-height: 30px;
   /* height: 28px; */
-  display:inline;
+  display: inline;
   color: #343434 !important;
 }
 .card.stream-card {
@@ -248,6 +326,6 @@ export default {
   /* line-break: normal; */
 }
 .card .card-title {
-    font-size: 20px;
+  font-size: 20px;
 }
 </style>

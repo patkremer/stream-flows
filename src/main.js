@@ -6,6 +6,8 @@ import moment from 'vue-moment'
 import VueAnalytics from 'vue-analytics';
 import { L } from 'vue2-leaflet'
 import 'leaflet/dist/leaflet.css'
+import VModal from 'vue-js-modal'
+const fb = require('./data/firebaseConfig.js');
 
 
 // this part resolve an issue where the markers would not appear
@@ -17,6 +19,7 @@ L.Icon.Default.mergeOptions({
   shadowUrl: require('leaflet/dist/images/marker-shadow.png')
 });
 
+Vue.use(VModal, { dynamic: true, injectModalsContainer: true });
 
 Vue.use(VueAnalytics, {
   id: 'UA-125445562-2',
@@ -31,7 +34,10 @@ Vue.use(VueLocalStorage, {
   bind: true 
 });
 Vue.use(moment);
+
 Vue.config.productionTip = false
+
+
 
 const app = new Vue({
   el: '#app',

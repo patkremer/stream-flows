@@ -147,6 +147,8 @@
         </div>
       </div>
     </div>
+
+   
   </div>
 </template>
 
@@ -181,7 +183,7 @@ export default {
   components: {
     // StreamTableCollection,
     StreamCardCollection,
-    StreamMap
+    StreamMap,
   },
 
   mounted() {

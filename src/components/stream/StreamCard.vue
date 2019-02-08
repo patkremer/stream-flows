@@ -46,12 +46,16 @@
           </span>
         </div>
         <div>
-        <small>   <a
-        v-if="stream.http_linkage"
-        v-on:click="viewSourceClick()"
-        v-bind:href="stream.http_linkage"
-        class="browser-default"
-        target="_blank">Source: {{stream.data_source}}</a><span v-else>Source: {{stream.data_source}}</span></small>
+          <small>
+            <a
+              v-if="stream.http_linkage"
+              v-on:click="viewSourceClick()"
+              v-bind:href="stream.http_linkage"
+              class="browser-default"
+              target="_blank"
+            >Source: {{stream.data_source}}</a>
+            <span v-else>Source: {{stream.data_source}}</span>
+          </small>
         </div>
       </div>
       <!--  -->
@@ -99,17 +103,23 @@ export default {
     return {
       error: null,
       flowData: [],
+      chartOptions: {
+        responsive: true,
+        maintainAspectRatio: false
+      },
       chartData: {
         labels: [],
         datasets: [
           {
             label: "My First dataset",
-             borderColor: '#249EBF',
-           // pointBackgroundColor: 'white',
-            //borderWidth: 1,
-            pointBorderColor: '#249EBF',
-            backgroundColor: 'transparent',
-            fill: false,
+            borderColor: "#004d40",
+            pointBackgroundColor: "rgba(0, 137, 123, 0.8)",
+            //   //borderWidth: 1,
+            pointBorderColor: "#004d40",
+
+            backgroundColor: "rgba(0, 137, 123, 0.8)", //'#0F3053',
+            fill: "start",
+            //pointStyle: 'crossRot', //crossRot
             data: []
           }
         ]
@@ -119,8 +129,7 @@ export default {
 
   components: {
     WeatherForecast,
-    Weather,
-    StreamHistoryModal
+    Weather
   },
 
   props: {
@@ -154,6 +163,7 @@ export default {
         eventAction: "saveFavorite",
         eventLabel: this.stream.station_name
       });
+
       let favorites = JSON.parse(this.$ls.get("favoriteStreams", "[]"));
       let self = this;
       if (_.includes(favorites, this.stream.stationId)) {
@@ -196,46 +206,52 @@ export default {
             // doc.data() is never undefined for query doc snapshots
           });
 
-          self.flowData = _.orderBy(flowHistory, {'date_time': 'desc'});
-          self.flowData = self.flowData.slice(1).slice(-40);
-          self.chartData.labels = _.map(self.flowData, function (f) {
-            var dt = new Date(f.date_time);
+          self.flowData = _.orderBy(flowHistory, { date_time: "desc" });
+          if (self.MobileDeviceAndTabletCheck()) {
+            //uncomment to only show recent history
+            //if mobile or tablets only show 40 of the most recent record flows, the chart doesn't look good if there's more
+            self.flowData = self.flowData.slice(1).slice(-40);
+          } else if (self.flowData.length > 110) {
+            self.flowData = self.flowData.slice(1).slice(-109);
+          }
 
+          self.chartData.labels = _.map(self.flowData, function(f) {
+            var dt = new Date(f.date_time);
             return dt.toDateString();
           });
 
-
-
           self.chartData.datasets[0].label = "Cfs";
-          self.chartData.datasets[0].data = _.map(self.flowData, function (f) {
-             f.amount = _.toNumber(f.amount);
+          self.chartData.datasets[0].data = _.map(self.flowData, function(f) {
+            f.amount = _.toNumber(f.amount);
             if (_.isNumber(f.amount)) {
               return f.amount;
-            } else {
-              console.log('flow is not a number', f.amount);
             }
             return 0;
           });
 
-
+          // Show modal and pass in chart data
           self.$modal.show(
             StreamHistoryModal,
-            { chartjsData: self.chartData, currentStream: self.stream },
-            { height: 'auto', width: '95%'
+            {
+              chartjsData: self.chartData,
+              chartOptions: self.chartOptions,
+              currentStream: self.stream
             },
+            { height: "auto", width: "95%" },
             null,
             {
               name: "stream-chart-modal",
               resizable: true,
               adaptive: true,
-              scrollable: true,
-             // clickToClose: false
+              scrollable: true
+              // clickToClose: false
             }
           );
-
         })
         .catch(function(error) {
-          console.log("Error getting documents: ", error);
+          this.error = error;
+
+          //  console.log("Error getting documents: ", error);
         });
 
       this.$ga.event({
@@ -266,7 +282,7 @@ export default {
         eventAction: "getForecast",
         eventLabel: this.stream.station_name
       });
-      //  if (!this.stream.forecast.list) {
+
       weatherApi
         .getForecast(
           this.stream.location.latitude,
@@ -276,7 +292,6 @@ export default {
           this.stream.forecast = response;
         })
         .catch(error => (this.error = error));
-      //}
     },
     getWeather() {
       this.$ga.event({

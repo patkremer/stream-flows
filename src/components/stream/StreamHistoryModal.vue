@@ -12,9 +12,8 @@
              <div class="col">
               <p class="truncate">{{currentStream.station_name}}</p>
                
-                <div style="position: relative; min-height:350px; width:85vw" >
-                  <stream-history-chart :chart-data="data" v-if="isLoaded" />
-
+                <div style="position: relative; min-height:350px; width:89vw" >
+                  <stream-history-chart :chart-data="data" :options="chartOptions" v-if="isLoaded" />
 
                 </div>
              </div>
@@ -29,13 +28,12 @@
 
 <script>
 import StreamHistoryChart from './StreamHistoryChart.vue'
-import _ from "lodash";
 export default {
   name: 'StreamHistoryModal',
   components: {
     StreamHistoryChart
   },
-  props: ['chartjsData', 'currentStream'],
+  props: ['chartjsData', 'chartOptions','currentStream'],
   data() {
     return {
      flowData: [],
@@ -48,24 +46,7 @@ export default {
   mounted() {
     this.data = this.chartjsData;
     this.isLoaded = true;
-   // this.chartData = this.data;
-    //  this.flowData = _.orderBy(this.flowData, {'date_time': 'desc'});
-
-    //   this.chartData.labels = _.map(this.flowData, function (f) {
-    //     return f.date_time;
-    //   });
-
-    //   this.chartData.datasets[0].label = this.currentStream.station_name;
-    //   this.chartData.datasets[0].data = _.map(this.flowData, function (f) {
-    //     f.flow = _.toNumber(f.flow);
-    //     if (_.isNumber(f.flow)) {
-    //       return f.flow;
-    //     } else {
-    //       console.log('flow is not a number', f.flow);
-    //     }
-    //     return 0;
-    //   });
-      this.isLoaded = true;
+  
   },
  
 }

@@ -52,20 +52,14 @@ export default {
       if (!s.county) {
         s.county = "";
       }
-      if (s.amount && s.amount !== "-888.00") {
-        // bad data, set to 0
-        s.flowAmount = _.toNumber(s.amount);
-      } else {
-        s.amount = "0.00";
-        s.flowAmount = 0.0;
-      }
+      s.stationId = _.snakeCase(s.station_name);
+      this.parseAmount(s);
       if (s.location && s.location.coordinates) {
         s.location.longitude = s.location.coordinates[0];
         s.location.latitude = s.location.coordinates[1];
       } else {
         s.mapLink = "";
       }
-      s.stationId = _.snakeCase(s.station_name);
 
       this.checkDuplicatesAndAdd(data, s);
 
@@ -75,19 +69,10 @@ export default {
   },
 
   checkDuplicatesAndAdd: function(data, s) {
-    if (s.qualifiers) {
-      if (s.qualifiers.indexOf("Ice") != -1) {
-        s.amount = "Ice";
-        s.units = "";
-        s.flowAmount = 0.0;
-      }
-      if (s.qualifiers.indexOf("Ssn") != -1) {
-        s.amount = (s.amount == 'Ice') ? s.amount + ', seasonally monitored' : 'seasonally monitored';
-        s.units = "";
-        s.flowAmount = 0.0;
-      }
-    }
+    
+    
 
+    // if the stationId exists in the dictionary, check to see if this qualifer has ice to overrite inactive data
     if (data[s.stationId]) {
       if (s.qualifiers && s.qualifiers.indexOf("Ice") != -1) {
         data[s.stationId].qualifiers = "Ice";
@@ -96,26 +81,39 @@ export default {
         data[s.stationId].flowAmount = 0;
         data[s.stationId].date_time = s.date_time;
       }
-      //   if (!data[s.stationId].duplicates) {
-
-      //     data[s.stationId].duplicates = [];
-      //   }
-      //   if (s.fromUsgs && data[s.stationId].div && !s.div) {
-      //       s.div = data[s.stationId].div;
-      //   }
-      //   data[s.stationId].duplicates.push(s);
+     
     } else {
-      if (s.amount.indexOf('-999')  != -1 || s.amount.indexOf('-888')  != -1) {
-        s.amount = 'Ice or Inactive';
-        s.units = "";
-        s.flowAmount = 0.0;
-      }
+      
       if (!_.includes(s.station_name, 'ARF HEADGATE')) {
         data[s.stationId] = s;
       }
     }
   },
+  parseAmount(d) {
+    // -999 and -888 are always negative
+    if (d.amount && !isNaN( _.toNumber(d.amount)) && !(d.amount.indexOf('-999')  != -1 || d.amount.indexOf('-888')  != -1)) {
+      // bad data, set to 0
+      d.flowAmount = _.toNumber(d.amount);
+    }
+    else {
+      d.amount = "0.00";
+      d.flowAmount = 0.0;
+    }
 
+    if (d.qualifiers) {
+      if (d.qualifiers.indexOf("Ice") != -1) {
+        d.amount = "Ice";
+        d.units = "";
+        d.flowAmount = 0.0;
+      }
+      if (d.qualifiers.indexOf("Ssn") != -1) {
+        d.amount = (d.amount == 'Ice') ? d.amount + ', seasonally monitored' : 'seasonally monitored';
+        d.units = "";
+        d.flowAmount = 0.0;
+      }
+    } 
+   
+  },
   parseUsgsResponse: function(response, data) {
     let usgstimeseries = response.value.timeSeries;
     for (let index = 0; index < usgstimeseries.length; index++) {
@@ -137,13 +135,7 @@ export default {
       d.qualifiers = s.values[0].value[0].qualifiers.join(",");
       d.stationId = _.snakeCase(d.station_name);
       d.fromUsgs = true;
-      if (d.amount) {
-        // bad data, set to 0
-        d.flowAmount = _.toNumber(s.amount);
-      } else {
-        d.amount = "0.00";
-        d.flowAmount = 0.0;
-      }
+      this.parseAmount(d);
       d.div = " ";
       d.http_linkage =
         "https://waterdata.usgs.gov/nwis/uv?" + d.usgs_station_id;
@@ -206,3 +198,4 @@ export default {
     }
   }
 };
+

@@ -32,7 +32,7 @@ npm run build
 co-flows.surge.sh
 Deploy with surge [see link](https://cli.vuejs.org/guide/deployment.html#surge).
 
-surge dist coloradoflows.com
+surge dist co-flows.surge.sh
 
 ### Run your tests
 ```
@@ -47,3 +47,10 @@ npm run lint
 ### Customize configuration
 See [Configuration Reference](https://cli.vuejs.org/config/).
 
+### Built with
+Vue.js 
+Leaflet,vue2-leaflet,vue2-leaflet-markercluster
+axios
+OpenStreetMap
+Firebase
+ChartJs and VueChartJs

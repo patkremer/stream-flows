@@ -10,7 +10,7 @@
           type="text"
           placeholder="Search"
         >
-        <label for="stream_search">Search Streams by name</label>
+        <label for="stream_search" class="active">Search Streams by name</label>
         <span class="helper-text">
           <span
             v-if="filtersActive"
@@ -114,7 +114,7 @@
             <i class="material-icons right">keyboard_arrow_right</i>
           </a>
         </div>
-        <div class="input-field active col s2 m2 l1 xl1">
+        <div class="input-field col s2 m2 l1 xl1">
           <input
             v-model.number="size"
             id="page_size"
@@ -124,9 +124,9 @@
             max="500"
             type="number"
           >
-          <label for="page_size">Page size</label>
+          <label for="page_size" class="active">Page size</label>
         </div>
-        <div class="input-field active col s3 m3 l3 xl3">
+        <div class="input-field  col s3 m3 l3 xl3">
           <input
             v-model.number="pageNumber"
             id="pageNumber"
@@ -136,7 +136,7 @@
             v-bind:max="pageCount"
             type="number"
           >
-          <label for="pageNumber">Page Number</label>
+          <label for="pageNumber" class="active">Page Number</label>
           <span class="helper-text">Out of {{pageCount}}</span>
         </div>
       </div>
@@ -155,7 +155,9 @@
 <script>
 import waterApi from "../../data/waterApi.js";
 import apiTokens from "../../apiTokens.js";
-import _ from "lodash";
+var _orderBy = require('lodash/orderBy');
+var _sortBy = require('lodash/sortBy');
+var _values = require('lodash/values');
 // import StreamTableCollection from "./StreamTableCollection.vue";
 import StreamCardCollection from "./StreamCardCollection.vue";
 import StreamMap from "./StreamMap.vue";
@@ -191,11 +193,11 @@ export default {
     this.searchSettings = JSON.parse(
       this.$ls.get("searchSettings", JSON.stringify(this.searchSettings))
     );
+    
   },
 
   updated() {
-    // eslint-disable-next-line no-undef
-    M.updateTextFields();
+   
     this.$ls.set("searchSettings", JSON.stringify(this.searchSettings));
     this.$ls.set("streams", JSON.stringify(this.streams));
   },
@@ -260,14 +262,14 @@ export default {
         });
     
       if (this.searchSettings.search) {
-        return _.orderBy(
+        return _orderBy(
           returnData,
           ["station_status", "data_source", "date_time", "county"],
           ["asc", "asc", "desc", "desc"]
         );
       } else {
-        return _.sortBy(
-          _.orderBy(
+        return _sortBy(
+          _orderBy(
             returnData,
             ["station_status", "data_source", "date_time"],
             ["asc", "asc", "desc"]
@@ -349,8 +351,8 @@ export default {
       const favorites = JSON.parse(this.$ls.get("favoriteStreams", "[]"));
       let data = JSON.parse(this.$ls.get("streams", "[]"));
       if (data.length > 0) {
-        _.forEach(data, function(val) {
-          if (favorites.length > 0 && _.includes(favorites, val.stationId)) {
+        data.forEach(function(val) {
+          if (favorites.length > 0 && favorites.indexOf(val.stationId) != -1) {
             val.isFavorite = true;
           } else {
             val.isFavorite = false;
@@ -359,9 +361,9 @@ export default {
         this.streams = data;
       } else {
         waterApi.getCoRiverData().then(data => {
-          var streamData = _.values(data);
-          _.forEach(streamData, function(val) {
-            if (favorites.length > 0 && _.includes(favorites, val.stationId)) {
+          var streamData = _values(data);
+          streamData.forEach(function(val) {
+            if (favorites.length > 0 && favorites.indexOf(val.stationId) != -1) {
               val.isFavorite = true;
             } else {
               val.isFavorite = false;

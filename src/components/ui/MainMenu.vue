@@ -47,17 +47,12 @@ export default {
     VLink,
     AppIcon
   },
-  updated() {
-    //  var elems = document.querySelectorAll('.sidenav');
-    // eslint-disable-next-line no-undef
-    M.AutoInit();
-    //  M.Sidenav.init(elems);
-  },
+
   mounted: function() {
-    //var elems = document.querySelectorAll('.sidenav');
+    var elems = document.querySelectorAll('.sidenav');
     // eslint-disable-next-line no-undef
-    M.AutoInit();
-    //M.Sidenav.init(elems);
+    M.Sidenav.init(elems);
+    // M.AutoInit();
 
     //   this.$nextTick(function () {
     // // Code that will run only after the

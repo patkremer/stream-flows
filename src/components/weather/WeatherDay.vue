@@ -25,7 +25,7 @@
 
 <script>
 export default {
-  name: 'weather',
+  name: 'weather-day',
    props: {
     weather: {
       required: true,

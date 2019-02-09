@@ -25,19 +25,13 @@
           >in {{stream.county}} County</span>
         </div>
         <div v-if="hasLatAndLong">
-          <weather v-if="stream.weather.main" v-bind:weather="stream.weather"></weather>
-
-          <a class="btn-flat btn-large weather-button" v-else v-on:click.once="getWeather(stream)">
-            <i class="material-icons left">wb_cloudy</i>Show Current Weather
-          </a>
-        </div>
-        <div v-if="hasLatAndLong">
-          <a
-            class="btn-large btn-flat weather-button activator"
-            v-on:click.once="getForecastClick(stream)"
-          >
-            <i class="material-icons left">filter_drama</i>Show 5 Day Forecast
-          </a>
+          <weather-day v-if="stream.weather.main" v-bind:weather="stream.weather"></weather-day>
+          <weather-button v-else v-on:click.once="getWeather"></weather-button>
+          <div>
+            <weather-button v-on:click.once="getForecastClick" class="activator">Show 5 Day Forecast
+              <template v-slot:icon>filter_drama</template>
+            </weather-button>
+          </div>
         </div>
         <div>
           <span v-if="stream.station_status">
@@ -68,34 +62,32 @@
       <weather-forecast v-bind:forecast.sync="forecast"></weather-forecast>
     </div>
     <div class="card-action center">
-      <a
-        class="btn-small btn-flat waves-effect waves-light teal-text text-darken-2"
-        v-on:click="getMapClick()"
-        v-if="getMapLink(stream)"
+      <flat-link-button
+        v-if="getMapLink"
+        v-bind:href="getMapLink"
+        v-on:click="getMapClick"
         target="_blank"
-        v-bind:href="getMapLink(stream)"
-      >
-        <i class="material-icons left">my_location</i>Map
-      </a>
-      
-      <a
-        v-on:click="viewFlowHistory()"
-        class="btn-small btn-flat waves-effect waves-light teal-text text-darken-2"
-      >
-        <i class="material-icons left">show_chart</i>
-        Chart
-      </a>
+      >Map
+        <template v-slot:icon>my_location</template>
+      </flat-link-button>
+
+      <flat-link-button v-on:click="viewFlowHistory">Chart
+        <template v-slot:icon>show_chart</template>
+      </flat-link-button>
     </div>
   </div>
 </template>
 
 <script>
 import WeatherForecast from "../weather/WeatherForecast.vue";
-import Weather from "../weather/Weather.vue";
-import weatherApi from "../../data/weatherApi.js";
-import _ from "lodash";
-const fb = require("../../data/firebaseConfig.js");
+import WeatherDay from "../weather/WeatherDay.vue";
+import WeatherButton from "../weather/WeatherButton.vue";
+import FlatLinkButton from "../ui/FlatLinkButton.vue";
 import StreamHistoryModal from "./StreamHistoryModal.vue";
+import waterApi from "../../data/waterApi";
+import chartDefaultConfig from "../../data/chartDefaultConfig";
+import weatherApi from "../../data/weatherApi.js";
+
 
 export default {
   name: "stream-card",
@@ -103,33 +95,16 @@ export default {
     return {
       error: null,
       flowData: [],
-      chartOptions: {
-        responsive: true,
-        maintainAspectRatio: false
-      },
-      chartData: {
-        labels: [],
-        datasets: [
-          {
-            label: "My First dataset",
-            borderColor: "#004d40",
-            pointBackgroundColor: "rgba(0, 137, 123, 0.8)",
-            //   //borderWidth: 1,
-            pointBorderColor: "#004d40",
-
-            backgroundColor: "rgba(0, 137, 123, 0.8)", //'#0F3053',
-            fill: "start",
-            //pointStyle: 'crossRot', //crossRot
-            data: []
-          }
-        ]
-      }
+      chartOptions: {},
+      chartData: {}
     };
   },
 
   components: {
     WeatherForecast,
-    Weather
+    WeatherDay,
+    WeatherButton,
+    FlatLinkButton
   },
 
   props: {
@@ -153,24 +128,34 @@ export default {
         //this.stream.forecast = {};
         return null;
       }
+    },
+    getMapLink() {
+      if (
+        this.stream.location &&
+        this.stream.location.latitude &&
+        this.stream.location.longitude
+      ) {
+        return (
+          "https://www.google.com/maps/search/?api=1&query=" +
+          this.stream.location.latitude.toString() +
+          "," +
+          this.stream.location.longitude.toString()
+        );
+      } else {
+        return "";
+      }
     }
   },
 
   methods: {
     saveToFavorites() {
-      this.$ga.event({
-        eventCategory: "click",
-        eventAction: "saveFavorite",
-        eventLabel: this.stream.station_name
-      });
+      this.trackClick("saveFavorite_" + this.stream.station_name);
 
       let favorites = JSON.parse(this.$ls.get("favoriteStreams", "[]"));
-      let self = this;
-      if (_.includes(favorites, this.stream.stationId)) {
+      var index = favorites.indexOf(this.stream.stationId);
+      if (index > -1) {
         this.stream.isFavorite = false;
-        _.remove(favorites, function(s) {
-          return s === self.stream.stationId;
-        });
+        favorites.splice(index, 1);
       } else {
         this.stream.isFavorite = true;
         favorites.push(this.stream.stationId);
@@ -179,55 +164,42 @@ export default {
       this.$ls.set("favoriteStreams", JSON.stringify(favorites));
     },
 
-    getMapClick() {
+    trackClick(action) {
       this.$ga.event({
         eventCategory: "click",
-        eventAction: "getMap",
+        eventAction: action,
         eventLabel: this.stream.station_name
       });
+    },
+    getMapClick() {
+      this.trackClick("getMap_" + this.stream.station_name);
     },
     viewSourceClick() {
-      this.$ga.event({
-        eventCategory: "click",
-        eventAction: "viewSourceClick",
-        eventLabel: this.stream.station_name
-      });
+      this.trackClick("viewSourceClick_" + this.stream.station_name);
     },
 
-    viewFlowHistory() {
+    viewFlowHistory(e) {
+      e.preventDefault();
+      this.trackClick("viewFlowHistory_" + this.stream.station_name);
+
       var flowHistory = [];
       var self = this;
-      fb.flowsCollection
-        .where("stationId", "==", this.stream.stationId)
-        .get()
-        .then(function(querySnapshot) {
-          querySnapshot.forEach(function(doc) {
-            flowHistory.push(doc.data());
-            // doc.data() is never undefined for query doc snapshots
-          });
+      waterApi
+        .getFlowHistory(this.stream)
+        .then(data => {
+          flowHistory = data;
 
-          self.flowData = _.orderBy(flowHistory, { date_time: "desc" });
-          if (self.MobileDeviceAndTabletCheck()) {
-            //uncomment to only show recent history
-            //if mobile or tablets only show 40 of the most recent record flows, the chart doesn't look good if there's more
-            self.flowData = self.flowData.slice(1).slice(-40);
-          } else if (self.flowData.length > 110) {
-            self.flowData = self.flowData.slice(1).slice(-109);
-          }
+          var _chartData = waterApi.getChartDataFromFlowHistory(
+            flowHistory,
+            self.$mobileDeviceAndTabletCheck()
+          );
 
-          self.chartData.labels = _.map(self.flowData, function(f) {
-            var dt = new Date(f.date_time);
-            return dt.toDateString();
-          });
+          self.chartOptions = chartDefaultConfig.streamChartConfig.getOptions();
+          self.chartData = chartDefaultConfig.streamChartConfig.getChartData();
 
-          self.chartData.datasets[0].label = "Cfs";
-          self.chartData.datasets[0].data = _.map(self.flowData, function(f) {
-            f.amount = _.toNumber(f.amount);
-            if (_.isNumber(f.amount)) {
-              return f.amount;
-            }
-            return 0;
-          });
+          self.chartData.labels = _chartData.labels;
+
+          self.chartData.datasets[0].data = _chartData.data;
 
           // Show modal and pass in chart data
           self.$modal.show(
@@ -250,38 +222,11 @@ export default {
         })
         .catch(function(error) {
           this.error = error;
-
-          //  console.log("Error getting documents: ", error);
         });
+    },
 
-      this.$ga.event({
-        eventCategory: "click",
-        eventAction: "viewFlowHistory",
-        eventLabel: this.stream.station_name
-      });
-    },
-    getMapLink(stream) {
-      if (
-        stream.location &&
-        stream.location.latitude &&
-        stream.location.longitude
-      ) {
-        return (
-          "https://www.google.com/maps/search/?api=1&query=" +
-          stream.location.latitude.toString() +
-          "," +
-          stream.location.longitude.toString()
-        );
-      } else {
-        return "";
-      }
-    },
     getForecastClick() {
-      this.$ga.event({
-        eventCategory: "click",
-        eventAction: "getForecast",
-        eventLabel: this.stream.station_name
-      });
+      this.trackClick("getForecast_" + this.stream.station_name);
 
       weatherApi
         .getForecast(
@@ -294,13 +239,7 @@ export default {
         .catch(error => (this.error = error));
     },
     getWeather() {
-      this.$ga.event({
-        eventCategory: "click",
-        eventAction: "getWeather",
-        //eventAction: "getWeather",
-        eventLabel: this.stream.station_name
-      });
-      // console.log(stream, 'get weather');
+      this.trackClick("getWeather_" + this.stream.station_name);
 
       weatherApi
         .getWeather(
@@ -317,13 +256,6 @@ export default {
 </script>
 
 <style>
-.weather-button {
-  padding: 0;
-  line-height: 30px;
-  /* height: 28px; */
-  display: inline;
-  color: #343434 !important;
-}
 .card.stream-card {
   height: 350px;
 }

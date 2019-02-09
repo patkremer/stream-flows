@@ -153,12 +153,13 @@ export default {
     var promise = new Promise((resolve, reject) => {
       let header = this.urls.getCoDataHeader();
 
-      let getCoData = axios.get(this.urls.coData, { headers: header });
+      let getCoData = axios.get(this.urls.codataBackup, { headers: header });
 
       let getUsgsData = axios.get(this.urls.usgs);
       axios.all([getCoData, getUsgsData])
         .then(axios.spread(function (coData, usgsData) {
           // Both requests are now complete
+          console.log(coData, 'codata');
           this.parseCoDataResponse(coData.data, data);
           this.parseUsgsResponse(usgsData.data, data);
           resolve(data);
@@ -173,6 +174,7 @@ export default {
     return promise;
   },
   urls: {
+    codataBackup: 'https://data.colorado.gov/resource/4yw9-a5y6.json?station_type=Stream&$limit=10000',
     coData:
       "https://data.colorado.gov/resource/a97x-8zfv.json?station_type=Stream&$limit=10000",
     usgs:

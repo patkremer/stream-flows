@@ -2,9 +2,10 @@
 import axios from "axios";
 import apiTokens from "../apiTokens";
 const fb = require("./firebaseConfig.js");
-var _snakeCase = require('lodash/trimEnd');
-var _trimEnd = require('lodash/trimEnd');
-var _orderBy = require('lodash/orderBy');
+// var _.snakeCase = require('lodash/trimEnd');
+// var _.trimEnd = require('lodash/trimEnd');
+// var _.orderBy = require('lodash/orderBy');
+import _ from 'lodash';
   /* <option value="1" >South Platte</option>
 <option value="2" >Arkansas</option>
 <option value="3" >Rio Grande</option>
@@ -55,7 +56,7 @@ export default {
       if (!s.county) {
         s.county = "";
       }
-      s.stationId = _snakeCase(s.station_name);
+      s.stationId = _.snakeCase(s.station_name);
       this.parseAmount(s);
       if (s.location && s.location.coordinates) {
         s.location.longitude = s.location.coordinates[0];
@@ -79,7 +80,7 @@ export default {
       d.weather = {};
       d.forecast = {};
       d.usgs_station_id = s.sourceInfo.siteCode[0].value;
-      d.station_name = _trimEnd(s.sourceInfo.siteName, ", CO");
+      d.station_name = _.trimEnd(s.sourceInfo.siteName, ", CO");
       d.location = {};
 
       d.location.longitude = s.sourceInfo.geoLocation.geogLocation.longitude;
@@ -89,7 +90,7 @@ export default {
       d.amount = s.values[0].value[0].value;
       d.date_time = s.values[0].value[0].dateTime;
       d.qualifiers = s.values[0].value[0].qualifiers.join(",");
-      d.stationId = _snakeCase(d.station_name);
+      d.stationId = _.snakeCase(d.station_name);
       d.fromUsgs = true;
       this.parseAmount(d);
       d.div = " ";
@@ -151,7 +152,7 @@ export default {
   },
 
   getChartDataFromFlowHistory(flowHistory, isMobileDevice) {
-    var flowData = _orderBy(flowHistory, { date_time: "desc" });
+    var flowData = _.orderBy(flowHistory, { date_time: "desc" });
     var chartData = {
       data: [],
       labels: []

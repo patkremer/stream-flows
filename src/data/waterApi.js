@@ -153,13 +153,12 @@ export default {
     var promise = new Promise((resolve, reject) => {
       let header = this.urls.getCoDataHeader();
 
-      let getCoData = axios.get(this.urls.codataBackup, { headers: header });
+      let getCoData = axios.get(this.urls.coData, { headers: header });
 
       let getUsgsData = axios.get(this.urls.usgs);
       axios.all([getCoData, getUsgsData])
         .then(axios.spread(function (coData, usgsData) {
           // Both requests are now complete
-          console.log(coData, 'codata');
           this.parseCoDataResponse(coData.data, data);
           this.parseUsgsResponse(usgsData.data, data);
           resolve(data);

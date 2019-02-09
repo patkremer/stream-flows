@@ -31,15 +31,7 @@
     },
    
     mounted: function () {
-      //var elems = document.querySelectorAll('.sidenav');
-      // eslint-disable-next-line no-undef
-      M.AutoInit();
-      //M.Sidenav.init(elems);
-
-    //   this.$nextTick(function () {
-    // // Code that will run only after the
-    // // entire view has been rendered
-    //   })
+ 
     }
   }
 </script>

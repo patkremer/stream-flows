@@ -1,7 +1,7 @@
 "use strict";
 import axios from "axios";
 import apiTokens from "../apiTokens";
-import _ from 'lodash';
+var _groupBy = require('lodash/groupBy');
 
 export default {
   weatherBase: "http://api.openweathermap.org/data/2.5/",
@@ -29,7 +29,7 @@ export default {
       weatherData.groupByDate = weatherData.dt_txt.split(' ')[0];
       data.list[i] = weatherData;
     }
-    var groupBy = _.groupBy(data.list, 'groupByDate');
+    var groupBy = _groupBy(data.list, 'groupByDate');
 
     data.forecastsByDay = groupBy;
     return data;

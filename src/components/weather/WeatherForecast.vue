@@ -5,13 +5,13 @@
       <p>City: {{forecast.city.name}} <small>[need to verify accuracy of the weather data]</small></p>
       <ul class="collapsible expandable" v-if="forecast && forecast.forecastsByDay">
         <li v-for="(day, key) in forecast.forecastsByDay" v-bind:key="key">
-          <div class="collapsible-header"><weather v-bind:weather="meanWeather(day)" v-bind:show-icon="false" v-bind:show-date="true">
+          <div class="collapsible-header"><weather-day v-bind:weather="meanWeather(day)" v-bind:show-icon="false" v-bind:show-date="true">
             {{getDay(key)}}
-            </weather></div>
+            </weather-day></div>
           <div class="collapsible-body slim-body"><span v-for="(f, index) in day" v-bind:key="f.dt">
-            <weather v-if="index > 1 && index < 7" v-bind:show-icon="false" v-bind:weather="f" v-bind:show-date="true">
+            <weather-day v-if="index > 1 && index < 7" v-bind:show-icon="false" v-bind:weather="f" v-bind:show-date="true">
             {{getTime(f.dt_txt)}}
-            </weather>
+            </weather-day>
             </span>
             </div>
         </li>
@@ -40,8 +40,10 @@
 </template>
 
 <script>
-import Weather from './Weather';
-import _ from 'lodash';
+import WeatherDay from './WeatherDay';
+var _maxBy = require('lodash/maxBy');
+var _minBy = require('lodash/minBy');
+var _meanBy = require('lodash/meanBy');
 export default {
   name:'weather-forecast',
   props: {
@@ -61,13 +63,13 @@ export default {
     meanWeather: function (day) {
       var weather = day[0];
 
-      var max = _.maxBy(day, function(o) {
+      var max = _maxBy(day, function(o) {
         return o.main.temp;
       });
-      var min =  _.minBy(day, function(o) {
+      var min =  _minBy(day, function(o) {
         return o.main.temp;
       });
-      var mean = _.meanBy(day, function(o) {
+      var mean = _meanBy(day, function(o) {
         return o.main.temp;
       });
       
@@ -81,7 +83,7 @@ export default {
     }
   },
   components: {
-    Weather
+    WeatherDay
   },
 
   updated: function () {

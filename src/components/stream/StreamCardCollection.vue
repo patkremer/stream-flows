@@ -28,9 +28,6 @@ export default {
     StreamCard
   },
 
-  
-
-
 }
 </script>
 

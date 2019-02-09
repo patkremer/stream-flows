@@ -44,7 +44,7 @@ import MainLayout from "../layouts/Main.vue";
 import { L, LMap, LTileLayer, LMarker, LPopup, LTooltip } from "vue2-leaflet";
 import Vue2LeafletMarkerCluster from "vue2-leaflet-markercluster";
 // import waterApi from "../data/waterApi";
-import _ from "lodash";
+//import _ from "lodash";
 export default {
   name: "maps",
   methods: {
@@ -85,11 +85,11 @@ export default {
   },
 
   mounted() {
-    this.streams = _.filter(JSON.parse(this.$ls.get("streams"), "[]"), function(
-      o
-    ) {
-      return o.location && o.station_name.toLowerCase().indexOf("ditch") === -1;
-    });
+    // this.streams = _.filter(JSON.parse(this.$ls.get("streams"), "[]"), function(
+    //   o
+    // ) {
+    //   return o.location && o.station_name.toLowerCase().indexOf("ditch") === -1;
+    // });
   
   },
 

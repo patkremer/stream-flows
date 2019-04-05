@@ -1,12 +1,12 @@
 import Vue from 'vue'
-import routes from './routes';
-import NotFound from './pages/404.vue';
+import App from './App.vue';
 import VueLocalStorage from 'vue-localstorage'
 import moment from 'vue-moment'
 import VueAnalytics from 'vue-analytics';
 import { L } from 'vue2-leaflet'
 import 'leaflet/dist/leaflet.css'
 import VModal from 'vue-js-modal'
+import router from './router'
 
 
 // this part resolve an issue where the markers would not appear
@@ -53,23 +53,15 @@ Vue.prototype.$mobileDeviceAndTabletCheck = function() {
 
 
 
-const app = new Vue({
-  el: '#app',
-  data: {
-    currentRoute: window.location.pathname
-  },
-  computed: {
-    ViewComponent() {
-      return routes[this.currentRoute] || NotFound;
-    }
-  },
-  render (h) {
-    return h(this.ViewComponent); 
-  },
-});
+new Vue({
+  // el: '#app',
+  router,
+
+  render: h => h(App)
+}).$mount('#app');
 
 
-window.addEventListener('popstate', () => {
-  app.currentRoute = window.location.pathname;
-});
+// window.addEventListener('popstate', () => {
+//   app.currentRoute = window.location.pathname;
+// });
 

@@ -1,16 +1,26 @@
 <template>
+
   <main-layout>
-    <app></app>
+    <pre v-if="error">
+      {{error}}
+    </pre>
+    <stream-collection></stream-collection>
   </main-layout>
 </template>
 
 <script>
-import App from "../App.vue";
 import MainLayout from "../layouts/Main.vue";
+import StreamCollection from '../components/stream/StreamCollection.vue'
+
 export default {
   components: {
     MainLayout,
-    App
+    StreamCollection
+  },
+  data: function() {
+    return {
+        error: null
+      };
   },
   mounted() {
     this.track();
@@ -22,6 +32,7 @@ export default {
         screenName: "home"
       });
     }
-  }
+  },
+
 };
 </script>

@@ -22,7 +22,7 @@ export default {
   },
   computed: {
     isActive() {
-      return this.href === this.$root.currentRoute;
+      return true;// this.href === this.$root.currentRoute;
     }
   },
   

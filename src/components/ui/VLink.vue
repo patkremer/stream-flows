@@ -1,11 +1,11 @@
 <template>
-    <a v-bind:href="href" v-on:click="go">
+    <router-link v-bind:to="href" v-on:click="go">
       <slot></slot>
-    </a>
+    </router-link>
 </template>
 
 <script>
-import routes from "../../routes";
+//import routes from "../../routes";
 export default {
   name: 'v-link',
   props: {
@@ -23,8 +23,8 @@ export default {
           eventAction: "clickedNavLink",
           eventLabel: this.href
         });
-      this.$root.currentRoute = this.href;
-      window.history.pushState(null, routes[this.href], this.href);
+      // this.$root.currentRoute = this.href;
+      // window.history.pushState(null, routes[this.href], this.href);
     }
   }
 };

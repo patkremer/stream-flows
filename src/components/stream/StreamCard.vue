@@ -22,7 +22,7 @@
           {{stream.date_time | moment("from", "now") }}
         
           <span v-if="stream.temperature.value">
-            , <b>water temperature - {{stream.temperature.fahrenheit}}&#176;F</b>
+            , <b>water temperature {{stream.temperature.fahrenheit}}&#176;F</b>
           </span>
           <span
           v-else

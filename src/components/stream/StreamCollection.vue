@@ -188,6 +188,7 @@ export default {
         hideStreamsWithoutRecentUpdate: false,
         showOnlyStreamsWithTemp: false,
         size: 10,
+     
       }
     };
   },
@@ -205,6 +206,9 @@ export default {
     );
     if (this.searchSettings.size) {
       this.size = parseInt(this.searchSettings.size);
+    } else {
+      // size has never been set so reset streams
+      this.$ls.set("streams", "[]");
     }
     
   },
@@ -223,7 +227,7 @@ export default {
 
   computed: {
     filtersActive() {
-      return (this.searchSettings.showFavorites || this.searchSettings.regionId != ' ' || this.searchSettings.hideStreamsWithZeroCfs || this.searchSettings.hideStreamsWithoutRecentUpdate) && !this.searchSettings.showFilterOptions;
+      return (this.searchSettings.showFavorites || this.searchSettings.regionId != ' ' || this.searchSettings.hideStreamsWithZeroCfs || this.searchSettings.hideStreamsWithoutRecentUpdate || this.searchSettings.showOnlyStreamsWithTemp) && !this.searchSettings.showFilterOptions;
     },
     searchData() {
       if (this.searchSettings.search.length > 1) {

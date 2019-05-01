@@ -20,9 +20,13 @@
           <i class="material-icons left">waves</i>
           <b>{{stream.amount}} {{stream.units}},</b>
           {{stream.date_time | moment("from", "now") }}
+        
+          <span v-if="stream.temperature.value">
+            , <b>water temperature - {{stream.temperature.fahrenheit}}&#176;F</b>
+          </span>
           <span
-            v-if="stream.county"
-          >in {{stream.county}} County</span>
+          v-else
+        ><span v-if="stream.county && stream.county != ' '">in {{stream.county}} County</span></span>
         </div>
         <div v-if="hasLatAndLong">
           <weather-day v-if="stream.weather.main" v-bind:weather="stream.weather"></weather-day>

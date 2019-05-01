@@ -67,6 +67,14 @@
                 v-model="searchSettings.hideStreamsWithoutRecentUpdate"
               >
               <span>Hide Streams that haven't been updated recently</span>
+            </label>&nbsp;
+              <label>
+              <input
+                type="checkbox"
+                checked="checked"
+                v-model="searchSettings.showOnlyStreamsWithTemp"
+              >
+              <span>Show Streams with water temperature</span>
             </label>
           </p>
           <label>Filter By Drainage</label>
@@ -177,7 +185,9 @@ export default {
         showFilterOptions: true,
         hideStreamsWithZeroCfs: false,
         hideStreamsWithoutUpdateInPast30Days: false,
-        hideStreamsWithoutRecentUpdate: false
+        hideStreamsWithoutRecentUpdate: false,
+        showOnlyStreamsWithTemp: false,
+        size: 10,
       }
     };
   },
@@ -193,16 +203,20 @@ export default {
     this.searchSettings = JSON.parse(
       this.$ls.get("searchSettings", JSON.stringify(this.searchSettings))
     );
+    if (this.searchSettings.size) {
+      this.size = parseInt(this.searchSettings.size);
+    }
     
   },
 
   updated() {
-   
+    this.searchSettings.size = this.size;
     this.$ls.set("searchSettings", JSON.stringify(this.searchSettings));
     this.$ls.set("streams", JSON.stringify(this.streams));
   },
 
   beforeDestory() {
+    this.searchSettings.size = this.size;
     this.$ls.set("searchSettings", JSON.stringify(this.searchSettings));
     this.$ls.set("streams", JSON.stringify(this.streams));
   },
@@ -241,6 +255,11 @@ export default {
           if (self.searchSettings.hideStreamsWithoutRecentUpdate && include) {
             include = !(today.diff(self.$moment(s.date_time), "days") > 30);
           }
+
+          if (self.searchSettings.showOnlyStreamsWithTemp && include) {
+            include =  s.temperature.value ? true : false;
+          }
+
           if (self.searchSettings.search) {
             if (s.station_name) {
               if (!s.county) {
@@ -374,7 +393,7 @@ export default {
           this.$ls.set(
             "streams-cache-expire-date",
             this.$moment()
-              .add(2, "h")
+              .add(30, "m")
               .format("YYYY-MM-DD HH:mm")
           );
           // this.usgs = data;

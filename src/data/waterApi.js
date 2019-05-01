@@ -53,6 +53,7 @@ export default {
       s.id = index;
       s.weather = {};
       s.forecast = {};
+      s.temperature = {};
       if (!s.county) {
         s.county = "";
       }
@@ -73,11 +74,16 @@ export default {
   },
   parseUsgsResponse: function(response, data) {
     let usgstimeseries = response.value.timeSeries;
+    let tempGagues = [];
     for (let index = 0; index < usgstimeseries.length; index++) {
       var s = usgstimeseries[index];
+     
+
       var d = {};
+      
       d.id = index + 1000;
       d.weather = {};
+      d.temperature = {};
       d.forecast = {};
       d.usgs_station_id = s.sourceInfo.siteCode[0].value;
       d.station_name = _.trimEnd(s.sourceInfo.siteName, ", CO");
@@ -86,23 +92,88 @@ export default {
       d.location.longitude = s.sourceInfo.geoLocation.geogLocation.longitude;
       d.location.latitude = s.sourceInfo.geoLocation.geogLocation.latitude;
       d.county = " ";
-      d.units = "CFS";
-      d.amount = s.values[0].value[0].value;
-      d.date_time = s.values[0].value[0].dateTime;
-      d.qualifiers = s.values[0].value[0].qualifiers.join(",");
+
       d.stationId = _.snakeCase(d.station_name);
       d.fromUsgs = true;
-      this.parseAmount(d);
       d.div = " ";
       d.http_linkage =
         "https://waterdata.usgs.gov/nwis/uv?" + d.usgs_station_id;
       d.data_source = "U.S. Geological Survey";
-      //if (!d.qualifiers == "A") {
-      this.checkDuplicatesAndAdd(data, d);
+      // cfs 
+      if (s.variable.variableCode[0].value === "00060") {
+        d.units = "CFS";
+        d.unitsLong = s.variable.variableDescription;
 
-      // }
+        d.amount = s.values[0].value[0].value;
+        d.date_time = s.values[0].value[0].dateTime;
+        d.qualifiers = s.values[0].value[0].qualifiers.join(",");
+        
+        this.parseAmount(d);
+
+        this.checkDuplicatesAndAdd(data, d);
+      }
+
+      // temp process differently
+      if (s.variable.variableCode[0].value === "00010" && s.values[0].value[0].value != '-999999') {
+        d.temperature.value = s.values[0].value[0].value;
+        d.temperature.datetime = s.values[0].value[0].dateTime;
+        d.temperature.name = s.variable.variableDescription;
+        d.temperature.fahrenheit = this.celsiusToFah(d.temperature.value);
+        d.temperature.fahrenheitName = d.temperature.fahrenheit + '&#176;F';
+        tempGagues.push(d);
+        // "variable": {
+        //   "variableCode": [
+        //   {
+        //   "value": "00010",
+        //   "network": "NWIS",
+        //   "vocabulary": "NWIS:UnitValues",
+        //   "variableID": 45807042,
+        //   "default": true
+        //   }
+        //   ],
+        //   "variableName": "Temperature, water, &#176;C",
+        //   "variableDescription": "Temperature, water, degrees Celsius",
+        //   "valueType": "Derived Value",
+        //   "unit": {
+        //   "unitCode": "deg C"
+        //   },
+        //   "options": {
+        //   "option": [
+        //   {
+        //   "value": "Mean",
+        //   "name": "Statistic",
+        //   "optionCode": "00003"
+        //   }
+        //   ]
+        //   },
+        //   "note": [],
+        //   "noDataValue": -999999,
+        //   "variableProperty": [],
+        //   "oid": "45807042"
+        //   },
+      }
+     
+
     }
+
+    for (let i = 0; i < tempGagues.length; i++) {
+      const temp = tempGagues[i];
+      if (data[temp.stationId]) {
+        
+        data[temp.stationId].temperature = temp.temperature;
+        //console.log(temp.temperature, 'tempurate found');
+      }
+    }
+
     return data;
+  },
+  celsiusToFah(celsius) {
+    var celsiusFloat = parseFloat(celsius);
+    if (isNaN(celsiusFloat)) {
+      return celsius;
+    }
+    var fahrenheit = Math.round((celsiusFloat * (9/5)) + 32);
+    return fahrenheit;
   },
   parseAmount(d) {
     // -999 and -888 are always negative
@@ -241,7 +312,7 @@ export default {
     coData:
       "https://data.colorado.gov/resource/a97x-8zfv.json?station_type=Stream&$limit=10000",
     usgs:
-      "https://waterservices.usgs.gov/nwis/iv/?format=json&stateCd=co&parameterCd=00060,00065&siteType=ST&siteStatus=active",
+      "https://waterservices.usgs.gov/nwis/iv/?format=json&stateCd=co&parameterCd=00060,00010&siteType=ST&siteStatus=active", //add 000065 for gage height
     usgsBase:
       "https://waterservices.usgs.gov/nwis/dv/?format=json&siteType=ST&siteStatus=active", // usgs_station_id 06714215&'
     usgsByStationForYear: function() {

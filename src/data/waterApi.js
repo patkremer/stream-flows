@@ -58,6 +58,7 @@ export default {
         s.county = "";
       }
       s.stationId = _.snakeCase(s.station_name);
+      s.http_linkage = s.http_linkage.url;
       this.parseAmount(s);
       if (s.location && s.location.coordinates) {
         s.location.longitude = s.location.coordinates[0];

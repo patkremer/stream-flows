@@ -183,9 +183,8 @@ export default {
         showFavorites: false,
         regionId: " ",
         showFilterOptions: true,
-        hideStreamsWithZeroCfs: false,
-        hideStreamsWithoutUpdateInPast30Days: false,
-        hideStreamsWithoutRecentUpdate: false,
+        hideStreamsWithZeroCfs: true,
+        hideStreamsWithoutRecentUpdate: true,
         showOnlyStreamsWithTemp: false,
         size: 10,
      
@@ -214,15 +213,11 @@ export default {
   },
 
   updated() {
-    this.searchSettings.size = this.size;
-    this.$ls.set("searchSettings", JSON.stringify(this.searchSettings));
-    this.$ls.set("streams", JSON.stringify(this.streams));
+    this.setLocalStorage();
   },
 
   beforeDestory() {
-    this.searchSettings.size = this.size;
-    this.$ls.set("searchSettings", JSON.stringify(this.searchSettings));
-    this.$ls.set("streams", JSON.stringify(this.streams));
+    this.setLocalStorage();
   },
 
   computed: {
@@ -330,6 +325,11 @@ export default {
   },
 
   methods: {
+    setLocalStorage() {
+       this.searchSettings.size = this.size;
+      this.$ls.set("searchSettings", JSON.stringify(this.searchSettings));
+      this.$ls.set("streams", JSON.stringify(this.streams));
+    },
     searchChanged() {
       if (this.searchSettings.search.length > 3) {
         this.$ga.event({

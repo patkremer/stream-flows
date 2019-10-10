@@ -52,7 +52,7 @@ See [Configuration Reference](https://cli.vuejs.org/config/).
 ### Built with
 Vue.js
 
-Leaflet,vue2-leaflet,vue2-leaflet-markercluster
+Leaflet, vue2-leaflet, vue2-leaflet-markercluster
 
 OpenStreetMap
 

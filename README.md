@@ -50,9 +50,16 @@ npm run lint
 See [Configuration Reference](https://cli.vuejs.org/config/).
 
 ### Built with
-Vue.js 
+Vue.js
+
 Leaflet,vue2-leaflet,vue2-leaflet-markercluster
-axios
+
 OpenStreetMap
+
+axios
+
 Firebase
+
 ChartJs and VueChartJs
+
+Materialize Css
